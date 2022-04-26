@@ -76,21 +76,20 @@ function send_mail(from,to,subject,text) {
       to: to,
       subject: subject,
       text: text
-  };
-   transporter.sendMail(mailOptions, function(error, info){
+    };
+    transporter.sendMail(mailOptions, function(error, info){
      if (error) {
        console.log(error);
      } else {
        console.log('Email sent: ' + info.response);
      }
-  });
-  //res.send("Done")
+    });
 }
 
 
 
 const register = async (req,res) =>{
-     try{
+    try{
         var email = req.body.email;
         var name = req.body.name;
         var password = req.body.password;
@@ -205,9 +204,11 @@ const register = async (req,res) =>{
                         var [user_referals,userfields] = await connection.query("INSERT INTO `user_referrals` SET `referred_by`='"+referarId+"',`referred_to`='"+userId+"',`created_at`='"+moment().format("YYYY MM DD hh:mm:ss")+"',`updated_at`='"+moment().format("YYYY MM DD hh:mm:ss")+"'")
                         //update users ktpoints
                         var [updaterefer,urfields] = await connection.query("UPDATE `users` SET `tokens`=(`tokens`+"+referal+") WHERE `id`='"+userId+"'")
-                        
+                        //Update is reffered to yes
+                        var [isrefferefto,istfields] = await connection.query("UPDATE `users` SET `is_reffered` = 'YES' WHERE `id`='"+referarId+"'")
+                    
                         //Insert into game token history
-                    var [game_token,game_fields] = await connection.query("INSERT INTO `game_tokens` SET `user_id`='"+userId+"',`tokens`='"+referal+"',`tokens_type`='Referral Bonus',`created_at`='"+moment().format("YYYY MM DD hh:m:ss")+"',`updated_at`='"+moment().format("YYYY MM DD hh:mm:ss")+"'")
+                        var [game_token,game_fields] = await connection.query("INSERT INTO `game_tokens` SET `user_id`='"+userId+"',`tokens`='"+referal+"',`tokens_type`='Referral Bonus',`created_at`='"+moment().format("YYYY MM DD hh:m:ss")+"',`updated_at`='"+moment().format("YYYY MM DD hh:mm:ss")+"'")
                     
                     }
                 }
@@ -347,6 +348,8 @@ const referralCode = async (req,res) =>{
                     var [update_user,updatefield] = await connection.query("UPDATE `users` SET `tokens`=(`tokens`+"+user_settings[0]['value']+") WHERE `id`='"+userId+"'")
                     //Insert into game token history
                     var [game_token,game_fields] = await connection.query("INSERT INTO `game_tokens` SET `user_id`='"+userId+"',`tokens`='"+user_settings[0]['value']+"',`tokens_type`='Referral Bonus',`created_at`='"+moment().format("YYYY MM DD hh:m:ss")+"',`updated_at`='"+moment().format("YYYY MM DD hh:mm:ss")+"'")
+                    //Update is reffered to yes
+                    var [isrefferefto,istfields] = await connection.query("UPDATE `users` SET `is_reffered` = 'YES' WHERE `id`='"+referred_by+"'")
                     res.send({
                         "message":"Refercode Applied Successfully."
                     })
