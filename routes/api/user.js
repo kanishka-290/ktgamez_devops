@@ -1,5 +1,5 @@
 const api = require("../../controllers/api/user");
-const { verifyToken } = require("../../utils/verifyToken");
+const { verifyToken,verifyToken2 } = require("../../utils/verifyToken");
 
 module.exports = function(app){
 
@@ -18,5 +18,17 @@ module.exports = function(app){
     app.post("/api/googlelogin" ,api.googlelogin);
 
     app.post("/api/facebooklogin" ,api.facebooklogin);
+
+    app.get("/api/genre" ,api.genregames);
+
+    app.get("/api/games" ,api.games);
+
+    app.post("/api/forgotpassword" ,api.fotgotpassword);
+
+
+    app.get("/verifypassword/:token",verifyToken2, api.resetpassword);
+
+    app.post("/verifypassword/:token",verifyToken2, api.resetpassword2);
+
     //other routes..
 }

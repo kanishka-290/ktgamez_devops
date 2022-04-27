@@ -524,6 +524,35 @@ const leaderboard = async (req,res) =>{
     })
    
 };
+const genregames = async (req,res) =>{
+    try{
+        const connection = await sqlConnect();
+        var [game_ganer,gamefield] = await connection.query("SELECT `id`,`genre_name`,`genre_status`,`genre_description` FROM `game_genres` WHERE 1")
+        res.send({game_ganer})
+        connection.end();
+    }catch(err){
+        res.send({
+            "message": "Something went wrong."
+        })
+    }
+};
+const games = async (req,res) =>{
+    try{
+        const connection = await sqlConnect();
+        //console.log(req.body)
+        var genreId = req.body.genreId || "";
+        if(genreId == null || genreId == undefined || genreId == ""){
+            res.send({"message":"genreId is required"})
+        }else{
+            var [games,game_field] = await connection.query("SELECT `id`,`genre_id`,`game_name`,`game_description`,`game_cover_url`,`game_play_url`,`genre_slider`,`game_status` FROM `giro_games` WHERE `genre_id`='"+genreId+"'")
+            res.send({games})
+        }
+        
+        connection.end();
+    }catch(err){
+        res.send({"message":"Something went wrong"})
+    }
+}
 const ktpointshistory = async (req,res) =>{
     jwt.verify(req.token,"secretkey",async (err,data)=>{
         if(err){
@@ -544,7 +573,7 @@ const ktpointshistory = async (req,res) =>{
         }
     })
 };
-const fotgotpassword = async (req,res0) =>{
+const fotgotpassword = async (req,res) =>{
     try{
 
         var email = req.body.email || "";
@@ -554,16 +583,55 @@ const fotgotpassword = async (req,res0) =>{
         }else{
 
         const connection = await sqlConnect();
-        var otp = generateOTP();
-        
 
+        var [checkUser,checkfield] = await connection.query("SELECT `id` FROM `users` WHERE `email`='"+email+"'")
+        if(checkUser.length>0){
+        var payload = {
+            "id":checkUser[0]['id'],
+            "email":email
+        };
+        const token = jwt.sign(payload,process.env.SECRET_KEY,{expiresIn:"15m"})
+        var generateLink = "http://localhost:3000/verifypassword/"+token;
+        console.log(generateLink)
+        send_mail("aryan.server5638@gmail.com",email,"Reset your password","Reset your password using this link  "+generateLink)
+        res.send({"message":"We have sent you an reset password link on your email address which is valid for 15 minutes"})
+        }else{
+            res.send({"message":"The given data was invalid","errors":["Email not found in our records"]})
+
+        }
         connection.end();
         }
     }catch(err){
         res.send({"message":"Something went wrong"})
     }
 };
-
+const resetpassword = async (req,res) =>{
+        
+    jwt.verify(req.token,process.env.SECRET_KEY, async (err,data)=>{
+            if(err){
+                res.render("notfound.ejs")
+            }else{
+                //console.log(data);
+                res.render("resetpassword.ejs",{email:data.email})
+            }
+        })
+}
+const resetpassword2 = async (req,res) =>{
+    
+    console.log(req.body);
+    jwt.verify(req.token,process.env.SECRET_KEY, async (err,data)=>{
+        if(err){
+            res.render("notfound.ejs")
+        }else{
+            console.log(data);
+            const connection = await sqlConnect();
+            var [update,ufields] = await connection.query("UPDATE `users` SET `password`='"+md5(req.body.password1)+"' WHERE `id`='"+data.userId+"'")
+            connection.end();
+            res.render("success.ejs",{email:data.email})
+        }
+    })
+    
+}
 
 
 module.exports = {
@@ -575,4 +643,9 @@ module.exports = {
     referralCode,
     googlelogin,
     facebooklogin,
+    genregames,
+    games,
+    fotgotpassword,
+    resetpassword,
+    resetpassword2,
 }
