@@ -14,5 +14,9 @@ module.exports = function(app){
     app.get("/api/leaderboards", verifyToken ,api.leaderboard);
     
     app.post("/api/referralCode", verifyToken ,api.referralCode);
+
+    app.post("/api/googlelogin" ,api.googlelogin);
+
+    app.post("/api/facebooklogin" ,api.facebooklogin);
     //other routes..
 }

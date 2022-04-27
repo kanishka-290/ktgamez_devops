@@ -7,6 +7,9 @@ const moment = require("moment");
 const jwt = require("jsonwebtoken");
 const nodemailer = require('nodemailer');
 const res = require('express/lib/response');
+const { OAuth2Client } = require("google-auth-library");
+const fetch = require("node-fetch")
+const client = new OAuth2Client("965950927501-simcqlf1ojuhoc4r3nmr5fgi1kdhrg0c.apps.googleusercontent.com");
 //Nodemailer
 var transporter = nodemailer.createTransport({
     service: 'gmail',
@@ -36,11 +39,17 @@ schema
 // create the connection to database
 function sqlConnect(){
     const conn = mysql2.createConnection({
-        host: 'localhost',
-        user: 'root',
-        database: process.env.DB_NAME
+        host: process.env.HOST,
+        user: "root",
+        password:process.env.PASSWORD,
+        database: process.env.DB_NAME,
     });
+    if(conn){
+        console.log("Connected to database")
     return conn;
+    }else{
+        console.log("Database connection failed.")
+    }
 }
 
 // Generate Refer code
@@ -189,7 +198,7 @@ const register = async (req,res) =>{
                     is_reffered = "YES"
                 }
 
-                var [result,field] = await connection.query("INSERT INTO `users` SET `name`='"+name+"',`email`='"+email+"',`is_referred`='"+is_referred+"',`password`='"+md5(password)+"',`referral_code`='"+referral_code_user.trim()+"',`tokens`='"+signup[0]['value']+"',`created_at`='"+moment().format("YYYY MM DD hh:mm:ss")+"',`updated_at`='"+moment().format("YYYY MM DD hh:mm:ss")+"'")
+                var [result,field] = await connection.query("INSERT INTO `users` SET `name`='"+name+"',`email`='"+email+"',`is_referred`='"+is_referred+"',`password`='"+md5(password)+"',`referral_code`='"+referral_code_user.trim()+"',`tokens`='"+signup[0]['value']+"',`created_at`='"+moment().format("YYYY-MM-DD hh:mm:ss")+"',`updated_at`='"+moment().format("YYYY-MM-DD hh:mm:ss")+"'")
 
 
                 //referal
@@ -201,14 +210,14 @@ const register = async (req,res) =>{
                         var referarId = check[0]['id']
                         referal = signup[1]['value']
                         //user referal
-                        var [user_referals,userfields] = await connection.query("INSERT INTO `user_referrals` SET `referred_by`='"+referarId+"',`referred_to`='"+userId+"',`created_at`='"+moment().format("YYYY MM DD hh:mm:ss")+"',`updated_at`='"+moment().format("YYYY MM DD hh:mm:ss")+"'")
+                        var [user_referals,userfields] = await connection.query("INSERT INTO `user_referrals` SET `referred_by`='"+referarId+"',`referred_to`='"+userId+"',`created_at`='"+moment().format("YYYY-MM-DD hh:mm:ss")+"',`updated_at`='"+moment().format("YYYY-MM-DD hh:mm:ss")+"'")
                         //update users ktpoints
                         var [updaterefer,urfields] = await connection.query("UPDATE `users` SET `tokens`=(`tokens`+"+referal+") WHERE `id`='"+userId+"'")
                         //Update is reffered to yes
                         var [isrefferefto,istfields] = await connection.query("UPDATE `users` SET `is_reffered` = 'YES' WHERE `id`='"+referarId+"'")
                     
                         //Insert into game token history
-                        var [game_token,game_fields] = await connection.query("INSERT INTO `game_tokens` SET `user_id`='"+userId+"',`tokens`='"+referal+"',`tokens_type`='Referral Bonus',`created_at`='"+moment().format("YYYY MM DD hh:m:ss")+"',`updated_at`='"+moment().format("YYYY MM DD hh:mm:ss")+"'")
+                        var [game_token,game_fields] = await connection.query("INSERT INTO `game_tokens` SET `user_id`='"+userId+"',`tokens`='"+referal+"',`tokens_type`='Referral Bonus',`created_at`='"+moment().format("YYYY-MM-DD hh:m:ss")+"',`updated_at`='"+moment().format("YYYY-MM-DD hh:mm:ss")+"'")
                     
                     }
                 }
@@ -237,7 +246,6 @@ const register = async (req,res) =>{
 };
 const login = async (req,res) =>{
     try{
-     
       var email = req.body.email;
       var password = req.body.password;
       
@@ -294,6 +302,112 @@ const login = async (req,res) =>{
         res.send({ "error": "Something went wrong."})
     }
 };
+const googlelogin = async (req,res) =>{
+
+    try{
+    //console.log(req.body)
+    const connection = await sqlConnect();
+    const tokenId = req.body.tokenId;
+
+    client.verifyIdToken({idToken:tokenId,audience:"965950927501-simcqlf1ojuhoc4r3nmr5fgi1kdhrg0c.apps.googleusercontent.com"}).then(async response =>{
+        const {email_verified,email,name,picture} = response.payload;
+        //console.log(response.payload)
+        var [findUser,findDetail] = await connection.query("SELECT `id` FROM `users` WHERE `email`='"+email+"'");
+
+        if(findUser.length>0){
+
+            var loginTIme = moment().format("YYYY MM DD hh:mm:ss");
+            jwt.sign({loginTIme,findUser},'secretkey',{ expiresIn: '48h'},(err,token)=>{
+            res.send({token})
+         })
+        }else{
+            //generate refer code
+            var referral_code = generateString();
+
+            //get signup bonus
+            var [signup,signupfield] = await connection.query("SELECT `value` FROM `user_settings` WHERE `key`='Signup Bonus'")
+            
+            //Add data to users table
+            var [register,rfield] = await connection.query("INSERT INTO `users` SET `email`='"+email+"',`name`='"+name+"',`tokens`='"+signup[0]['value']+"',`avatar`='"+picture+"',`email_verified_at`='"+moment().format("YYYY-MM-DD hh:mm:ss")+"',`referral_code`='"+referral_code+"',`created_at`='"+moment().format("YYYY-MM-DD hh:mm:ss")+"',`updated_at`='"+moment().format("YYYY-MM-DD hh:mm:ss")+"'")
+            
+            //fetch the inserted id
+            var userId = register.insertId;
+            
+            //Add data to social Identities
+            var [social_identities,social_fields] = await connection.query("INSERT INTO `social_identities` SET `user_id`='"+userId+"',`provider_name`='Google',`avatar`='"+picture+"',`created_at`='"+moment().format("YYYY-MM-DD hh:mm:ss")+"',`updated_at`='"+moment().format("YYYY-MM-DD hh:mm:ss")+"'")
+            
+            //Get user detail
+            var [result,field] = await connection.query("SELECT `id` FROM `users` WHERE `email`='"+email+"'")
+
+            var loginTIme = moment().format("YYYY MM DD hh:mm:ss");
+            jwt.sign({loginTIme,result},'secretkey',{ expiresIn: '48h'},(err,token)=>{
+             res.send({token})
+         })
+            
+        }
+        
+    })
+    connection.end();
+    }catch(err){
+        
+    }
+}
+const facebooklogin = async (req,res) =>{
+
+    const {userID,accesstoken} = req.body;
+
+    let urlGraphFacebook = `https://graph.facebook.com/v2.11/${userID}/?fields=id,name,email,picture&access_token=${accesstoken}`;
+    fetch(urlGraphFacebook,{
+        method:"GET"
+    })
+    .then(res => res.json())
+    .then(async json => {
+        try{
+            const connection = await sqlConnect();
+
+            var {id,name,email,picture} = json;
+            var picture = picture.data.url
+        //console.log(picture.data.url)
+        var [findUser,findDetail] = await connection.query("SELECT `id` FROM `users` WHERE `email`='"+email+"'");
+
+        if(findUser.length>0){
+
+            var loginTIme = moment().format("YYYY MM DD hh:mm:ss");
+            jwt.sign({loginTIme,findUser},'secretkey',{ expiresIn: '48h'},(err,token)=>{
+            res.send({token})
+         })
+        }else{
+            //generate refer code
+            var referral_code = generateString();
+
+            //get signup bonus
+            var [signup,signupfield] = await connection.query("SELECT `value` FROM `user_settings` WHERE `key`='Signup Bonus'")
+            
+            //Add data to users table
+            var [register,rfield] = await connection.query("INSERT INTO `users` SET `email`='"+email+"',`name`='"+name+"',`tokens`='"+signup[0]['value']+"',`avatar`='"+picture+"',`email_verified_at`='"+moment().format("YYYY-MM-DD hh:mm:ss")+"',`referral_code`='"+referral_code+"',`created_at`='"+moment().format("YYYY-MM-DD hh:mm:ss")+"',`updated_at`='"+moment().format("YYYY-MM-DD hh:mm:ss")+"'")
+            
+            //fetch the inserted id
+            var userId = register.insertId;
+            
+            //Add data to social Identities
+            var [social_identities,social_fields] = await connection.query("INSERT INTO `social_identities` SET `user_id`='"+userId+"',`provider_name`='Facebook',`avatar`='"+picture+"',`created_at`='"+moment().format("YYYY-MM-DD hh:mm:ss")+"',`updated_at`='"+moment().format("YYYY-MM-DD hh:mm:ss")+"'")
+            
+            //Get user detail
+            var [result,field] = await connection.query("SELECT `id` FROM `users` WHERE `email`='"+email+"'")
+
+            var loginTIme = moment().format("YYYY MM DD hh:mm:ss");
+            jwt.sign({loginTIme,result},'secretkey',{ expiresIn: '48h'},(err,token)=>{
+             res.send({token})
+         })
+            
+        }
+
+            connection.end();
+        }catch(err){
+            res.send({"errors":"Something went wrong"})
+        }
+    })
+}
 const userdetails = async (req,res) =>{
     jwt.verify(req.token,"secretkey",async (err,data)=>{
         if(err){
@@ -459,5 +573,6 @@ module.exports = {
     kttokenhistory,
     leaderboard,
     referralCode,
-    
+    googlelogin,
+    facebooklogin,
 }
