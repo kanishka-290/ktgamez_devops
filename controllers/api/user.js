@@ -8,7 +8,8 @@ const jwt = require("jsonwebtoken");
 const nodemailer = require('nodemailer');
 const res = require('express/lib/response');
 const { OAuth2Client } = require("google-auth-library");
-const fetch = require("node-fetch")
+const fetch = require("node-fetch");
+const ejs = require("ejs");
 const client = new OAuth2Client("965950927501-simcqlf1ojuhoc4r3nmr5fgi1kdhrg0c.apps.googleusercontent.com");
 //Nodemailer
 var transporter = nodemailer.createTransport({
@@ -225,8 +226,37 @@ const register = async (req,res) =>{
                 var [result,field] = await connection.query("SELECT `id` FROM `users` WHERE `id`='"+userId+"'");
                 
                 var loginTIme = moment().format("YYYY MM DD hh:mm:ss");
-                var send_mail_function = send_mail("aryan.server5638@gmail.com",email,"You are successfully registered with ktgamez","You are successfully registered with ktgamez with this email address.");
+                //var send_mail_function = send_mail("aryan.server5638@gmail.com",email,"You are successfully registered with ktgamez","You are successfully registered with ktgamez with this email address.");
+                jwt.sign({result},"secretkey",(err,token)=>{
+                    if(err){
+                        console.log(err)
+                    }else{
+                        var link = "http://localhost:3000/verifyemail/"+token
+                        ejs.renderFile("D:\\Giro/ktgamez/views/welcome.ejs", { link: link }, function (err, data) {
+                            if (err) {
+                                console.log(err);
+                            } else {
+                                var mainOptions = {
+                                    from: 'aryan.server5638@gmail.com',
+                                    to: email,
+                                    subject: 'Successfully registered with ktgamez',
+                                    html: data
+                                };
+                                transporter.sendMail(mainOptions, function (err, info) {
+                                    if (err) {
+                                        console.log(err);
+                                    } else {
+                                        console.log('Message sent: ' + info.response);
+                                    }
+                                });
+                            }
+                            
+                            });
+                    }
+                })
                 
+
+
                 jwt.sign({loginTIme,result},"secretkey",{ expiresIn: '48h'},(err,token)=>{
                     if(err){
                         res.send({"error": "Something went wrong."})
@@ -351,7 +381,7 @@ const googlelogin = async (req,res) =>{
     }catch(err){
         
     }
-}
+};
 const facebooklogin = async (req,res) =>{
 
     const {userID,accesstoken} = req.body;
@@ -407,7 +437,7 @@ const facebooklogin = async (req,res) =>{
             res.send({"errors":"Something went wrong"})
         }
     })
-}
+};
 const userdetails = async (req,res) =>{
     jwt.verify(req.token,"secretkey",async (err,data)=>{
         if(err){
@@ -552,7 +582,7 @@ const games = async (req,res) =>{
     }catch(err){
         res.send({"message":"Something went wrong"})
     }
-}
+};
 const ktpointshistory = async (req,res) =>{
     jwt.verify(req.token,"secretkey",async (err,data)=>{
         if(err){
@@ -593,7 +623,31 @@ const fotgotpassword = async (req,res) =>{
         const token = jwt.sign(payload,process.env.SECRET_KEY,{expiresIn:"15m"})
         var generateLink = "http://localhost:3000/verifypassword/"+token;
         console.log(generateLink)
-        send_mail("aryan.server5638@gmail.com",email,"Reset your password","Reset your password using this link  "+generateLink)
+        //send_mail("aryan.server5638@gmail.com",email,"Reset your password","Reset your password using this link  "+generateLink)
+        
+        ejs.renderFile("D:\\Giro/ktgamez/views/reset_password.ejs", { generateLink: generateLink }, function (err, data) {
+            if (err) {
+                console.log(err);
+            } else {
+                var mainOptions = {
+                    from: 'aryan.server5638@gmail.com',
+                    to: email,
+                    subject: 'Reset password notification',
+                    html: data
+                };
+                //console.log("html data ======================>", mainOptions.html);
+                transporter.sendMail(mainOptions, function (err, info) {
+                    if (err) {
+                        console.log(err);
+                    } else {
+                        console.log('Message sent: ' + info.response);
+                    }
+                });
+            }
+            
+            });
+
+        
         res.send({"message":"We have sent you an reset password link on your email address which is valid for 15 minutes"})
         }else{
             res.send({"message":"The given data was invalid","errors":["Email not found in our records"]})
@@ -615,7 +669,7 @@ const resetpassword = async (req,res) =>{
                 res.render("resetpassword.ejs",{email:data.email})
             }
         })
-}
+};
 const resetpassword2 = async (req,res) =>{
     
     console.log(req.body);
@@ -631,8 +685,35 @@ const resetpassword2 = async (req,res) =>{
         }
     })
     
-}
-
+};
+const verifyemail = async (req,res) =>{
+    jwt.verify(req.token,"secretkey", async (err,data)=>{
+        if(err){
+            res.render("notfound.ejs")
+        }else{
+            //console.log(data);
+            try{
+                const connection = await sqlConnect();
+                var [check,fields] = await connection.query("SELECT `id`,`email_verified_at` FROM `users` WHERE `email_verified_at`=null AND `id`='"+data.result[0]['id']+"'")
+                if(check.length==0){
+                    
+                    var [update,field] = await connection.query("UPDATE `users` SET `email_verified_at`='"+moment().format("YYYY-MM-DD hh:mm:ss")+"' WHERE `id`='"+data.result[0]['id']+"'")
+                    res.render("emailverified.ejs",{verified:"Email verified successfully"})
+                }else{
+                    res.render("emailverified.ejs",{verified:"Email already verified"})
+                   
+                }
+                connection.end();
+            }catch(err){
+                res.render("notfound.ejs")
+            }
+            res.render("resetpassword.ejs",{email:data.email})
+        }
+    })
+};
+const test = async (req,res) =>{
+    res.render("welcome.ejs",{generateLink :"Aryan"})
+};
 
 module.exports = {
     login,
@@ -648,4 +729,7 @@ module.exports = {
     fotgotpassword,
     resetpassword,
     resetpassword2,
+    verifyemail,
+
+    test,
 }

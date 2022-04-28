@@ -30,5 +30,10 @@ module.exports = function(app){
 
     app.post("/verifypassword/:token",verifyToken2, api.resetpassword2);
 
+    app.get("/verifyemail/:token",verifyToken2, api.verifyemail);
+
+
+    app.get("/test", api.test);
+
     //other routes..
 }
