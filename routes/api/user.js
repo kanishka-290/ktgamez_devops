@@ -7,9 +7,13 @@ module.exports = function(app){
     
     app.post("/api/register",api.register);
 
+    app.post("/api/verifyemailaccount",verifyToken,api.verifyemailaccount);
+
     app.get("/api/user", verifyToken ,api.userdetails);
     
     app.get("/api/kttokenhistory", verifyToken ,api.kttokenhistory);
+
+    app.get("/api/ktpointhistory", verifyToken ,api.ktpointshistory);
     
     app.get("/api/leaderboards", verifyToken ,api.leaderboard);
     
@@ -31,6 +35,21 @@ module.exports = function(app){
     app.post("/verifypassword/:token",verifyToken2, api.resetpassword2);
 
     app.get("/verifyemail/:token",verifyToken2, api.verifyemail);
+
+    app.get("/api/playnwin",verifyToken, api.playandwin);
+
+    app.get("/api/compete/:id",verifyToken, api.compete);
+
+    app.get("/api/start/:id",verifyToken, api.start);
+
+    app.post("/api/submitgamescore",verifyToken, api.submitgamescore);
+
+    app.post("/api/search", api.searchgame);
+
+
+
+
+
 
 
     app.get("/test", api.test);

@@ -332,6 +332,55 @@ const login = async (req,res) =>{
         res.send({ "error": "Something went wrong."})
     }
 };
+const verifyemailaccount = async (req,res) =>{
+
+    jwt.verify(req.token,"secretkey",async (err,data)=>{
+        if(err){
+            res.send({"message":"Unauthenticated"})
+        }else{
+            try{
+                var email = data.result[0].email;
+                
+                const connection = await sqlConnect();
+                var [result,field] = await connection.query("SELECT `id` FROM `users` WHERE `email`='"+email+"'");
+                jwt.sign({result},"secretkey",(err,token)=>{
+                    if(err){
+                        console.log(err)
+                    }else{
+                        var link = "http://localhost:3000/verifyemail/"+token
+                        ejs.renderFile("D:\\Giro/ktgamez/views/welcome.ejs", { link: link }, function (err, data) {
+                            if (err) {
+                                console.log(err);
+                            } else {
+                                var mainOptions = {
+                                    from: 'aryan.server5638@gmail.com',
+                                    to: email,
+                                    subject: 'Successfully registered with ktgamez',
+                                    html: data
+                                };
+                                transporter.sendMail(mainOptions, function (err, info) {
+                                    if (err) {
+                                        console.log(err);
+                                    } else {
+                                        console.log('Message sent: ' + info.response);
+                                    }
+                                });
+                            }
+                            
+                            });
+                    }
+                })
+                res.send({"message":"We have sent you a fresh email verification link to your email. please verify your email account."})
+                connection.end();
+            }catch(err){
+                    res.send({
+                        "message": "Something went wrong."
+                    })
+            }
+        }
+    })
+    
+};
 const googlelogin = async (req,res) =>{
 
     try{
@@ -593,7 +642,12 @@ const ktpointshistory = async (req,res) =>{
                 
                 const connection = await sqlConnect();
 
-                
+                var [ktpoint,field] = await connection.query("SELECT * FROM `game_points` WHERE `user_id`='"+userId+"'")
+                if(ktpoint.length>0){
+                    res.send(ktpoint)
+                }else{
+                    res.send({"message":"No history found"})
+                }
                 connection.end();
             }catch(err){
                     res.send({
@@ -711,6 +765,151 @@ const verifyemail = async (req,res) =>{
         }
     })
 };
+const playandwin = async (req,res) =>{
+    jwt.verify(req.token,"secretkey", async (err,data)=>{
+        if(err){
+            res.send("Unauthinticated")
+        }else{
+            try{
+                const connection = await sqlConnect();
+                
+                var [check,cfield] = await connection.query("SELECT `id`,`email_verified_at` FROM `users` WHERE `id`='"+data.result[0].id+"'")
+
+                if(check[0]['email_verified_at']==null){
+                    res.send({"message":"Please verify your email first."})
+                }else{
+                 var [completegames,cgfields] = await connection.query("SELECT `id`,`genre_id`,`game_name`,`game_description`,`entry_tokens`,`game_cover_url`,`game_play_url`,`game_status` FROM `compete_games` WHERE 1")
+                res.send({completegames})
+                }
+                connection.end();
+            }catch(err){
+                res.send({"message":"Something went wrong"})
+
+            }
+            
+        }
+    })
+};
+const compete = async (req,res) =>{
+    jwt.verify(req.token,"secretkey", async (err,data)=>{
+        if(err){
+            res.send("Unauthinticated")
+        }else{
+            try{
+                const connection = await sqlConnect();
+                var [check,cfield] = await connection.query("SELECT `id`,`email_verified_at` FROM `users` WHERE `id`='"+data.result[0].id+"'")
+                var id = req.params.id || "";
+                if(check[0]['email_verified_at']==null){
+                    res.send({"message":"Please verify your email first."})
+                }else if(id==null || id == undefined || id ==""){
+                    res.send({"message":"id is required."})
+                }else{
+                 var [completegames,cgfields] = await connection.query("SELECT `id`,`genre_id`,`game_name`,`game_description`,`entry_tokens`,`game_cover_url`,`game_play_url`,`game_status` FROM `compete_games` WHERE `id`='"+id+"'")
+                res.send({completegames})
+                }
+                connection.end();
+            }catch(err){
+                res.send({"message":"Something went wrong"})
+
+            }
+            
+        }
+    })
+};
+const start = async (req,res) =>{
+    jwt.verify(req.token,"secretkey", async (err,data)=>{
+        if(err){
+            res.send("Unauthinticated")
+        }else{
+            try{
+                const connection = await sqlConnect();
+                var [check,cfield] = await connection.query("SELECT `id`,`email_verified_at` FROM `users` WHERE `id`='"+data.result[0].id+"'")
+                var id = req.params.id || "";
+                if(check[0]['email_verified_at']==null){
+                    res.send({"message":"Please verify your email first."})
+                }else if(id==null || id == undefined || id ==""){
+                    res.send({"message":"id is required."})
+                }else{
+                    var [game,gamefield] = await connection.query("SELECT `entry_tokens` FROM `compete_games` WHERE `id`='"+id+"'")
+                    
+                    //Deduct entry tokens
+                    var [updateuser,ufield] = await connection.query("UPDATE `users` SET `tokens`=(`tokens`-"+game[0]['entry_tokens']+") WHERE `id`='"+data.result[0].id+"'")
+                    
+                    //add trensection history
+                    var [add,tfield] = await connection.query("INSERT INTO `game_tokens` SET `user_id`='"+data.result[0].id+"',`game_id`='"+id+"',`tokens`='"+game[0]['entry_tokens']+"',`tokens_type`='Entry Fee',`created_at`='"+moment().format("YYYY-MM-DD hh:mm:ss")+"',`updated_at`='"+moment().format("YYYY-MM-DD hh:mm:ss")+"'")
+                    
+                    res.send({"message":"Success"})
+                }
+                connection.end();
+            }catch(err){
+                res.send({"message":"Something went wrong"})
+
+            }
+            
+        }
+    })
+};
+const submitgamescore = async (req,res) =>{
+    jwt.verify(req.token,"secretkey", async (err,data)=>{
+        if(err){
+            res.send("Unauthinticated")
+        }else{
+            try{
+                const connection = await sqlConnect();
+                var [check,cfield] = await connection.query("SELECT `id`,`email_verified_at` FROM `users` WHERE `id`='"+data.result[0].id+"'")
+                var id = req.body.id || "";
+                var score = req.body.score || "";
+                if(check[0]['email_verified_at']==null){
+                    res.send({"message":"Please verify your email first."})
+                }else if(id==null || id == undefined || id ==""){
+                    res.send({"message":"id is required."})
+                }else if(score==null || score == undefined || score ==""){
+                    res.send({"message":"id is required."})
+                }else if(score==0){
+                    res.send({"message":"Score must be greater than zero"})
+                }else{
+
+                    //add in game points history
+                  var [addscore,scorefield] = await connection.query("INSERT INTO `game_points` SET `user_id`='"+data.result[0].id+"',`game_id`='"+id+"',`points`='"+score+"',`points_type`='Game Play',`created_at`='"+moment().format("YYYY-MM-DD hh:mm:ss")+"',`updated_at`='"+moment().format("YYYY-MM-DD hh:mm:ss")+"'")
+                
+                    //add in game token history
+                    var [updateuser,ufield] = await connection.query("UPDATE `users` SET `points`=(`points`+"+score+") WHERE `id`='"+data.result[0].id+"'");
+                    
+                    //Leaderboard Games
+                    var [leaderboard,leaderfield] = await connection.query("SELECT `id` FROM `game_leaderboards` WHERE `user_id`='"+data.result[0].id+"' AND `game_id`='"+id+"'")
+                    if(leaderboard.length>0){
+                        var [update,ufield] = await connection.query("UPDATE `game_leaderboards` SET `score`=(`score`+"+score+"),`updated_at`='"+moment().format("YYYY-MM-DD hh:mm:ss")+"' WHERE `user_id`='"+data.result[0].id+"' AND `game_id`='"+id+"'")
+                    }else{
+                        var [update,ufield] = await connection.query("INSERT INTO `game_leaderboards` SET `score`='"+score+"',`user_id`='"+data.result[0].id+"',`game_id`='"+id+"',`created_at`='"+moment().format("YYYY-MM-DD hh:mm:ss")+"',`updated_at`='"+moment().format("YYYY-MM-DD hh:mm:ss")+"'");
+
+                    }
+                    res.send({"message":"Success"})
+                }
+                connection.end();
+            }catch(err){
+                res.send({"message":"Something went wrong"})
+
+            }
+            
+        }
+    })
+};
+const searchgame = async (req,res) =>{
+    try{
+        var keyword = req.body.keyword || "";
+        const connection = await sqlConnect();
+        var [result,field] = await connection.query("SELECT `giro_games`.`id`,`game_name`,`game_cover_url`,`genre_name` FROM `giro_games` LEFT JOIN `game_genres` ON `giro_games`.`genre_id`=`game_genres`.`id` WHERE `game_name` LIKE '%"+keyword+"%'")
+        if(result.length>0){
+            res.send({result})
+        }else{
+            res.send({"message":"No Games found"})
+        }
+        
+        connection.end();
+    }catch(err){
+        res.send({"message":"Something went wrong"})
+    }
+}
 const test = async (req,res) =>{
     res.render("welcome.ejs",{generateLink :"Aryan"})
 };
@@ -718,8 +917,10 @@ const test = async (req,res) =>{
 module.exports = {
     login,
     register,
+    verifyemailaccount,
     userdetails,
     kttokenhistory,
+    ktpointshistory,
     leaderboard,
     referralCode,
     googlelogin,
@@ -730,6 +931,11 @@ module.exports = {
     resetpassword,
     resetpassword2,
     verifyemail,
+    playandwin,
+    compete,
+    start,
+    submitgamescore,
+    searchgame,
 
     test,
 }
