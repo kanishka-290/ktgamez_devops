@@ -7,25 +7,46 @@ module.exports = function(app){
     
     app.post("/api/register",api.register);
 
-    app.post("/api/verifyemailaccount",verifyToken,api.verifyemailaccount);
-
     app.get("/api/user", verifyToken ,api.userdetails);
+
+    app.get("/api/genre/:id" ,api.genre);
+
+    app.get("/api/points" ,api.points);
+
+    app.get("api/index" ,api.leaderboard);
+
+    app.get("api/ktLeaderboard" ,api.leaderboard);
+
+    app.get("/api/games",verifyToken, api.playandwin);
     
+    app.get("/api/genreslider" ,api.genregames);
+
+    app.get("/api/slide/:id" ,api.gamesusinggenreid);
+
+    app.get("/api/games" ,api.games);
+
+    app.post("/api/compete",verifyToken, api.submitgamescore);
+
+    app.get("/api/compete/:id",verifyToken, api.start);
+
+    app.post("/api/search", api.searchgame);
+
+    app.post("/api/email/verification-notification",verifyToken,api.verifyemailaccount);
+
+
+
+
+
     app.get("/api/kttokenhistory", verifyToken ,api.kttokenhistory);
 
     app.get("/api/ktpointhistory", verifyToken ,api.ktpointshistory);
-    
-    app.get("/api/leaderboards", verifyToken ,api.leaderboard);
-    
+        
     app.post("/api/referralCode", verifyToken ,api.referralCode);
 
     app.post("/api/googlelogin" ,api.googlelogin);
 
     app.post("/api/facebooklogin" ,api.facebooklogin);
 
-    app.get("/api/genre" ,api.genregames);
-
-    app.get("/api/games" ,api.games);
 
     app.post("/api/forgotpassword" ,api.fotgotpassword);
 
@@ -36,15 +57,9 @@ module.exports = function(app){
 
     app.get("/verifyemail/:token",verifyToken2, api.verifyemail);
 
-    app.get("/api/playnwin",verifyToken, api.playandwin);
-
     app.get("/api/compete/:id",verifyToken, api.compete);
 
-    app.get("/api/start/:id",verifyToken, api.start);
-
-    app.post("/api/submitgamescore",verifyToken, api.submitgamescore);
-
-    app.post("/api/search", api.searchgame);
+    
 
 
 
