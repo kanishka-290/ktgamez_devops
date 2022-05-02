@@ -2,14 +2,15 @@ const api = require("../../controllers/api/user");
 const { verifyToken,verifyToken2 } = require("../../utils/verifyToken");
 
 module.exports = function(app){
+    app.post("/api/register",api.register);
 
     app.post("/api/login",api.login);
     
-    app.post("/api/register",api.register);
-
     app.get("/api/user", verifyToken ,api.userdetails);
 
     app.get("/api/genre/:id" ,api.genre);
+
+    app.get("/api/play/:id",verifyToken, api.play);
 
     app.get("/api/points" ,api.points);
 
@@ -18,22 +19,37 @@ module.exports = function(app){
     app.get("api/ktLeaderboard" ,api.leaderboard);
 
     app.get("/api/games",verifyToken, api.playandwin);
-    
+
     app.get("/api/genreslider" ,api.genregames);
-
+    
     app.get("/api/slide/:id" ,api.gamesusinggenreid);
-
+    
+    app.post("/api/refer", verifyToken ,api.referralCode);
+    
+    app.post("/api/entry",verifyToken, api.start);
+    
+    app.post("/api/compete",verifyToken, api.submitgamescore);
+    
+    app.post("/api/search", api.searchgame);
+    
     app.get("/api/games" ,api.games);
 
-    app.post("/api/compete",verifyToken, api.submitgamescore);
+    app.post("/api/compete/:id",verifyToken, api.start2);
 
-    app.get("/api/compete/:id",verifyToken, api.start);
 
-    app.post("/api/search", api.searchgame);
+    
+
+    
+
+
+      
+
+    
 
     app.post("/api/email/verification-notification",verifyToken,api.verifyemailaccount);
 
 
+    
 
 
 
@@ -41,8 +57,6 @@ module.exports = function(app){
 
     app.get("/api/ktpointhistory", verifyToken ,api.ktpointshistory);
         
-    app.post("/api/referralCode", verifyToken ,api.referralCode);
-
     app.post("/api/googlelogin" ,api.googlelogin);
 
     app.post("/api/facebooklogin" ,api.facebooklogin);
@@ -56,8 +70,6 @@ module.exports = function(app){
     app.post("/verifypassword/:token",verifyToken2, api.resetpassword2);
 
     app.get("/verifyemail/:token",verifyToken2, api.verifyemail);
-
-    app.get("/api/compete/:id",verifyToken, api.compete);
 
     
 

@@ -399,6 +399,48 @@ const points = async (req,res) =>{
         res.send({"message":"Something went wrong"})
     }
 };
+const play = async (req,res) =>{
+    jwt.verify(req.token,"secretkey", async (err,data)=>{
+        if(err){
+            res.send({
+                "message": "Unauthenticated."
+            })
+        }else{
+            try{
+                const connection = await sqlConnect();
+                var [check,cfield] = await connection.query("SELECT `id`,`email_verified_at` FROM `users` WHERE `id`='"+data.result[0].id+"'")
+                var id = req.params.id || "";
+                if(check[0]['email_verified_at']==null){
+                    res.send({"message":"Please verify your email first."})
+                }else if(id==null || id == undefined || id ==""){
+                    res.send({"message":"id is required."})
+                }else{
+                    var [game,gamefield] = await connection.query("SELECT * FROM `giro_games` WHERE `id`='"+id+"'")
+                    if(game.length>0){ 
+                    res.send({
+                        "id":game[0]['id'],
+                        "genre_id":game[0]['genre_id'],
+                        "game_name":game[0]['game_name'],
+                        "game_description":game[0]['game_description'],
+                        "game_cover_url":game[0]['game_cover_url'],
+                        "game_play_url":game[0]['game_play_url'],
+                        "game_status":game[0]['game_status'],
+                        "created_at":game[0]['created_at'],
+                        "updated_at":game[0]['updated_at'],
+                    })
+                }else{
+                    res.send({"message":"Something went wrong"})
+                }
+                }
+                connection.end();
+            }catch(err){
+                res.send({"message":"Something went wrong"})
+
+            }
+            
+        }
+    })
+}
 const playandwin = async (req,res) =>{
     jwt.verify(req.token,"secretkey", async (err,data)=>{
         if(err){
@@ -638,7 +680,7 @@ const start = async (req,res) =>{
             try{
                 const connection = await sqlConnect();
                 var [check,cfield] = await connection.query("SELECT `id`,`email_verified_at` FROM `users` WHERE `id`='"+data.result[0].id+"'")
-                var id = req.params.id || "";
+                var id = req.body.game_id || "";
                 if(check[0]['email_verified_at']==null){
                     res.send({"message":"Please verify your email first."})
                 }else if(id==null || id == undefined || id ==""){
@@ -652,7 +694,11 @@ const start = async (req,res) =>{
                     //add trensection history
                     var [add,tfield] = await connection.query("INSERT INTO `game_tokens` SET `user_id`='"+data.result[0].id+"',`game_id`='"+id+"',`tokens`='"+game[0]['entry_tokens']+"',`tokens_type`='Entry Fee',`created_at`='"+moment().format("YYYY-MM-DD hh:mm:ss")+"',`updated_at`='"+moment().format("YYYY-MM-DD hh:mm:ss")+"'")
                     
-                    res.send(game)
+                    res.send({
+                        "success": "Token Balance Updated",
+                        "gameid": "1",
+                        "userid": 33
+                    })
                 }
                 connection.end();
             }catch(err){
@@ -663,67 +709,124 @@ const start = async (req,res) =>{
         }
     })
 };
-const verifyemailaccount = async (req,res) =>{
-
-    jwt.verify(req.token,"secretkey",async (err,data)=>{
+const start2 = async (req,res) =>{
+    jwt.verify(req.token,"secretkey", async (err,data)=>{
         if(err){
-            res.send({"message":"Unauthenticated"})
+            res.send({
+                "message": "Unauthenticated."
+            })
         }else{
             try{
-                
-                var userId = data.result[0].id;
-                
                 const connection = await sqlConnect();
-                var [emailData,efield] = await connection.query("SELECT `id`,`email`,`email_verified_at` FROM `users` WHERE `id`='"+userId+"'")
-                var email = emailData[0]['email'];
-                if(emailData[0]['email_verified_at']==null ||emailData[0]['email_verified_at']=="" ||emailData[0]['email_verified_at']==undefined){
-                    var [result,field] = await connection.query("SELECT `id` FROM `users` WHERE `email`='"+email+"'");
-                    jwt.sign({result},"secretkey",(err,token)=>{
-                        if(err){
-                            console.log(err)
-                        }else{
-                            var link = "http://localhost:3000/verifyemail/"+token
-                            ejs.renderFile("D:\\Giro/ktgamez/views/welcome.ejs", { link: link }, function (err, data) {
-                                if (err) {
-                                    console.log(err);
-                                } else {
-                                    console.log(email)
-                                    var mainOptions = {
-                                        from: 'aryan.server5638@gmail.com',
-                                        to: email,
-                                        subject: 'Verify your account with ktgamez',
-                                        html: data
-                                    };
-                                    transporter.sendMail(mainOptions, function (err, info) {
-                                        if (err) {
-                                            console.log(err);
-                                        } else {
-                                            console.log('Message sent: ' + info.response);
-                                        }
-                                    });
-                                }
-                                
-                                });
-                        }
-                    })
-                    res.send({"message":"We have sent you a fresh email verification link to your email. please verify your email account."})
-                    
+                var [check,cfield] = await connection.query("SELECT `id`,`email_verified_at` FROM `users` WHERE `id`='"+data.result[0].id+"'")
+                var id = req.params.id || "";
+                if(check[0]['email_verified_at']==null){
+                    res.send({"message":"Please verify your email first."})
+                }else if(id==null || id == undefined || id ==""){
+                    res.send({"message":"id is required."})
                 }else{
-                    res.send({
-                        "success": "User is Already Verified Return to Home Page"
-                    })
+                    var [game,gamefield] = await connection.query("SELECT * FROM `compete_games` WHERE `id`='"+id+"'")
+                    if(game.length>0){ 
+                    
+                    res.send(game)
+                }else{
+                    res.send({"message":"Something went wrong"})
+                }
                 }
                 connection.end();
             }catch(err){
-                    res.send({
-                        "message": "Something went wrong."
-                    })
+                res.send({"message":"Something went wrong"})
+
             }
+            
+        }
+    })
+};
+
+const fotgotpassword = async (req,res) =>{
+    try{
+
+        var email = req.body.email || "";
+
+        if(email == null || email == undefined || email == ""){
+            res.send({"message":"The given data was invalid","errors":["Email field is required"]})
+        }else{
+
+        const connection = await sqlConnect();
+
+        var [checkUser,checkfield] = await connection.query("SELECT `id` FROM `users` WHERE `email`='"+email+"'")
+        if(checkUser.length>0){
+        var payload = {
+            "id":checkUser[0]['id'],
+            "email":email
+        };
+        const token = jwt.sign(payload,process.env.SECRET_KEY,{expiresIn:"15m"})
+        var generateLink = "http://localhost:3000/verifypassword/"+token;
+        console.log(generateLink)
+        //send_mail("aryan.server5638@gmail.com",email,"Reset your password","Reset your password using this link  "+generateLink)
+        
+        ejs.renderFile("D:\\Giro/ktgamez/views/reset_password.ejs", { generateLink: generateLink }, function (err, data) {
+            if (err) {
+                console.log(err);
+            } else {
+                console.log(email)
+                var mainOptions = {
+                    from: 'aryan.server5638@gmail.com',
+                    to: email,
+                    subject: 'Reset password notification',
+                    html: data
+                };
+                //console.log("html data ======================>", mainOptions.html);
+                transporter.sendMail(mainOptions, function (err, info) {
+                    if (err) {
+                        console.log(err);
+                    } else {
+                        console.log('Message sent: ' + info.response);
+                    }
+                });
+            }
+            
+            });
+
+        
+        res.send({"message":"We have sent you an reset password link on your email address which is valid for 15 minutes"})
+        }else{
+            res.send({"message":"The given data was invalid","errors":["Email not found in our records"]})
+
+        }
+        connection.end();
+        }
+    }catch(err){
+        res.send({"message":"Something went wrong"})
+    }
+};
+const resetpassword = async (req,res) =>{
+        
+    jwt.verify(req.token,process.env.SECRET_KEY, async (err,data)=>{
+            if(err){
+                res.render("notfound.ejs")
+            }else{
+                //console.log(data);
+                res.render("resetpassword.ejs",{email:data.email})
+            }
+        })
+};
+const resetpassword2 = async (req,res) =>{
+    
+    console.log(req.body);
+    jwt.verify(req.token,process.env.SECRET_KEY, async (err,data)=>{
+        if(err){
+            res.render("notfound.ejs")
+        }else{
+            console.log(data);
+            const connection = await sqlConnect();
+            var [update,ufields] = await connection.query("UPDATE `users` SET `password`='"+md5(req.body.password1)+"' WHERE `id`='"+data.userId+"'")
+            connection.end();
+            res.render("success.ejs",{email:data.email})
         }
     })
     
 };
-
 
 
 
@@ -900,85 +1003,62 @@ const ktpointshistory = async (req,res) =>{
         }
     })
 };
-const fotgotpassword = async (req,res) =>{
-    try{
+const verifyemailaccount = async (req,res) =>{
 
-        var email = req.body.email || "";
-
-        if(email == null || email == undefined || email == ""){
-            res.send({"message":"The given data was invalid","errors":["Email field is required"]})
-        }else{
-
-        const connection = await sqlConnect();
-
-        var [checkUser,checkfield] = await connection.query("SELECT `id` FROM `users` WHERE `email`='"+email+"'")
-        if(checkUser.length>0){
-        var payload = {
-            "id":checkUser[0]['id'],
-            "email":email
-        };
-        const token = jwt.sign(payload,process.env.SECRET_KEY,{expiresIn:"15m"})
-        var generateLink = "http://localhost:3000/verifypassword/"+token;
-        console.log(generateLink)
-        //send_mail("aryan.server5638@gmail.com",email,"Reset your password","Reset your password using this link  "+generateLink)
-        
-        ejs.renderFile("D:\\Giro/ktgamez/views/reset_password.ejs", { generateLink: generateLink }, function (err, data) {
-            if (err) {
-                console.log(err);
-            } else {
-                var mainOptions = {
-                    from: 'aryan.server5638@gmail.com',
-                    to: email,
-                    subject: 'Reset password notification',
-                    html: data
-                };
-                //console.log("html data ======================>", mainOptions.html);
-                transporter.sendMail(mainOptions, function (err, info) {
-                    if (err) {
-                        console.log(err);
-                    } else {
-                        console.log('Message sent: ' + info.response);
-                    }
-                });
-            }
-            
-            });
-
-        
-        res.send({"message":"We have sent you an reset password link on your email address which is valid for 15 minutes"})
-        }else{
-            res.send({"message":"The given data was invalid","errors":["Email not found in our records"]})
-
-        }
-        connection.end();
-        }
-    }catch(err){
-        res.send({"message":"Something went wrong"})
-    }
-};
-const resetpassword = async (req,res) =>{
-        
-    jwt.verify(req.token,process.env.SECRET_KEY, async (err,data)=>{
-            if(err){
-                res.render("notfound.ejs")
-            }else{
-                //console.log(data);
-                res.render("resetpassword.ejs",{email:data.email})
-            }
-        })
-};
-const resetpassword2 = async (req,res) =>{
-    
-    console.log(req.body);
-    jwt.verify(req.token,process.env.SECRET_KEY, async (err,data)=>{
+    jwt.verify(req.token,"secretkey",async (err,data)=>{
         if(err){
-            res.render("notfound.ejs")
+            res.send({"message":"Unauthenticated"})
         }else{
-            console.log(data);
-            const connection = await sqlConnect();
-            var [update,ufields] = await connection.query("UPDATE `users` SET `password`='"+md5(req.body.password1)+"' WHERE `id`='"+data.userId+"'")
-            connection.end();
-            res.render("success.ejs",{email:data.email})
+            try{
+                
+                var userId = data.result[0].id;
+                
+                const connection = await sqlConnect();
+                var [emailData,efield] = await connection.query("SELECT `id`,`email`,`email_verified_at` FROM `users` WHERE `id`='"+userId+"'")
+                var email = emailData[0]['email'];
+                if(emailData[0]['email_verified_at']==null ||emailData[0]['email_verified_at']=="" ||emailData[0]['email_verified_at']==undefined){
+                    var [result,field] = await connection.query("SELECT `id` FROM `users` WHERE `email`='"+email+"'");
+                    jwt.sign({result},"secretkey",(err,token)=>{
+                        if(err){
+                            console.log(err)
+                        }else{
+                            var link = "http://localhost:3000/verifyemail/"+token
+                            ejs.renderFile("D:\\Giro/ktgamez/views/welcome.ejs", { link: link }, function (err, data) {
+                                if (err) {
+                                    console.log(err);
+                                } else {
+                                    console.log(email)
+                                    var mainOptions = {
+                                        from: 'aryan.server5638@gmail.com',
+                                        to: email,
+                                        subject: 'Verify your account with ktgamez',
+                                        html: data
+                                    };
+                                    transporter.sendMail(mainOptions, function (err, info) {
+                                        if (err) {
+                                            console.log(err);
+                                        } else {
+                                            console.log('Message sent: ' + info.response);
+                                        }
+                                    });
+                                }
+                                
+                                });
+                        }
+                    })
+                    res.send({"message":"We have sent you a fresh email verification link to your email. please verify your email account."})
+                    
+                }else{
+                    res.send({
+                        "success": "User is Already Verified Return to Home Page"
+                    })
+                }
+                connection.end();
+            }catch(err){
+                    res.send({
+                        "message": "Something went wrong."
+                    })
+            }
         }
     })
     
@@ -991,8 +1071,8 @@ const verifyemail = async (req,res) =>{
             //console.log(data);
             try{
                 const connection = await sqlConnect();
-                var [check,fields] = await connection.query("SELECT `id`,`email_verified_at` FROM `users` WHERE `email_verified_at`=null AND `id`='"+data.result[0]['id']+"'")
-                if(check.length==0){
+                var [check,fields] = await connection.query("SELECT `id`,`email_verified_at` FROM `users` WHERE `id`='"+data.result[0]['id']+"'")
+                if(check[0]['email_verified_at']==null || check[0]['email_verified_at']==undefined || check[0]['email_verified_at']==""){
                     
                     var [update,field] = await connection.query("UPDATE `users` SET `email_verified_at`='"+moment().format("YYYY-MM-DD hh:mm:ss")+"' WHERE `id`='"+data.result[0]['id']+"'")
                     res.render("emailverified.ejs",{verified:"Email verified successfully"})
@@ -1021,12 +1101,19 @@ module.exports = {
     register,
     userdetails,
     genre,
+    play,
     points,
     leaderboard,
     genregames,
     games,
     gamesusinggenreid,
     playandwin,
+    compete,
+    start,
+    start2,
+    referralCode,
+    submitgamescore,
+    searchgame,
 
 
 
@@ -1034,7 +1121,7 @@ module.exports = {
     kttokenhistory,
     ktpointshistory,
     
-    referralCode,
+    
     googlelogin,
     facebooklogin,
     
@@ -1043,10 +1130,7 @@ module.exports = {
     resetpassword2,
     verifyemail,
     
-    compete,
-    start,
-    submitgamescore,
-    searchgame,
+   
 
     test,
 }
