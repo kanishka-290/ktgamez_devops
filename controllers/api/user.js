@@ -11,6 +11,10 @@ const { OAuth2Client } = require("google-auth-library");
 const fetch = require("node-fetch");
 const ejs = require("ejs");
 const client = new OAuth2Client("965950927501-simcqlf1ojuhoc4r3nmr5fgi1kdhrg0c.apps.googleusercontent.com");
+const axios = require('axios');
+const fast2sms = require('fast-two-sms');
+var cron = require('node-cron');
+
 //Nodemailer
 var transporter = nodemailer.createTransport({
     service: 'gmail',
@@ -34,6 +38,42 @@ schema
 .has().not().spaces()                           // Should not have spaces
 .is().not().oneOf(['Passw0rd', 'Password123']); // Blacklist these values
 
+//cron job
+
+cron.schedule("0 0 */6 * * *",async function() {
+    console.log("running a task every 10 second");
+    try{
+        const connection = await sqlConnect();
+
+        const response = await fetch('https://mtn.girofintech.com/storage/DataSync.json');
+        const data = await response.json();
+        console.log(data.length)
+
+        var [subreq,subfield] = await connection.query("SELECT * FROM `subscription_requests` WHERE `created_at` LIKE '%"+moment().format("YYYY-MM-DD")+"%'")
+        console.log(subreq.length)
+        
+        if(subreq.length>0){
+            for(i=0;i<subreq.length;i++){
+
+                var [user,field] = await connection.query("SELECT `id`,`phone` FROM `users` WHERE `id`='"+subreq[i]['user_id']+"'")
+
+                for(j=0;j<data.length;j++){
+                    if((data[j]['sequenceNo'] == subreq[i]['subscription_id']) && data[j]['callingParty'] == user[0]['phone']){
+                        var [update,ufield] = await connection.query("UPDATE `users` SET `is_subscribed`=1 WHERE `id`='"+subreq[i]['user_id']+"'")
+                        console.log(subreq[i]['user_id']+"Updated");
+                    }else{
+                        console.log("Not Updated");
+                    }
+                }
+            }
+        }
+        
+        connection.end();
+    }catch(err){
+        console.log(err);
+    }
+
+  });
 
 
 
@@ -46,7 +86,7 @@ function sqlConnect(){
         database: process.env.DB_NAME,
     });
     if(conn){
-        console.log("Connected to database")
+        //console.log("Connected to database")
     return conn;
     }else{
         console.log("Database connection failed.")
@@ -57,7 +97,7 @@ function sqlConnect(){
 function generateString() {
     const characters ='ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
 
-        let result = ' ';
+        let result = '';
         const charactersLength = characters.length;
         for ( let i = 0; i < 12; i++ ) {
             result += characters.charAt(Math.floor(Math.random() * charactersLength));
@@ -70,7 +110,7 @@ function generateString() {
 function generateOTP() {
     const characters ='0123456789';
 
-        let result = ' ';
+        let result = '';
         const charactersLength = characters.length;
         for ( let i = 0; i < 6; i++ ) {
             result += characters.charAt(Math.floor(Math.random() * charactersLength));
@@ -96,15 +136,82 @@ function send_mail(from,to,subject,text) {
     });
 }
 
+//Call API
+const  axios_api = async (number, message, transactionId, clientCorrelator) =>{
+    var data = JSON.stringify({
+  "clientCorrelator": clientCorrelator || "RANDOMID123",
+  "message": message,
+  "receiverAddress": [
+    "234"+number
+  ],
+  "senderAddress": "20092"
+});
 
+var config = {
+  method: 'post',
+  url: 'http://79.175.163.215:7091/v2/messages/sms/outbound',
+  headers: { 
+    'transactionId': transactionId || '2349000000100130', 
+    'API-TOKEN': process.env.MTN_API_TOKEN, 
+    'Content-Type': 'application/json'
+  },
+  data : data
+};
+
+await axios(config)
+.then(function (response) {
+  console.log(JSON.stringify(response.data));
+  return JSON.stringify(response.data);
+})
+.catch(function (error) {
+  console.log(error);
+  return error;
+
+});
+};
+
+//Subscribe on demand
+const subscribe_on_demand = async (number,transactionId) =>{
+    var data = JSON.stringify({
+        "subscriptionProviderId": "CSM",
+        "subscriptionId": "6369",
+        "nodeId": "ICELL",
+        "subscriptionDescription": "P_ICELL_I_Cel_15554",
+        "registrationChannel": "API"
+      });
+      
+      var config = {
+        method: 'post',
+        url: 'http://79.175.163.215:7091/v2/customers/'+number+'/subscriptions/',
+        headers: { 
+          'transactionId': transactionId ||'2349000000100123', 
+          'API-TOKEN': process.env.MTN_API_TOKEN, 
+          'Content-Type': 'application/json'
+        },
+        data : data
+      };
+      
+      await axios(config)
+      .then(function (response) {
+        console.log(JSON.stringify(response.data));
+        return(JSON.stringify(response.data))
+      })
+      .catch(function (error) {
+        console.log(error);
+        return (error)
+      });
+      
+}
 
 const register = async (req,res) =>{
-    try{
+    //try{
         var email = req.body.email;
         var name = req.body.name;
         var password = req.body.password;
         var password_confirmation = req.body.password_confirmation;
         var referral_code = req.body.referral_code;
+        var phone = req.body.phone || "";
+
         var error = {};
         var errorCode = 0;
     if(name == null || name == undefined || name == ""){
@@ -123,10 +230,6 @@ const register = async (req,res) =>{
     if(password == null || password == undefined || password == ""){
         errorCode = 1;
         error["password"]=["The password field is required."];
-    }
-    if(password_confirmation == null || password_confirmation == undefined || password_confirmation == ""){
-        errorCode = 1;
-        error["password_confirmation"]=["The password confirmation field is required."];
     }else if(!schema.validate(password)){
         errorCode = 1;
         error["password"]=["The password must be 8 characters long.",
@@ -135,14 +238,15 @@ const register = async (req,res) =>{
         "Password must contain one digit",
         "Password must should not contain blank space",]
     }
+    if(password_confirmation == null || password_confirmation == undefined || password_confirmation == ""){
+        errorCode = 1;
+        error["password_confirmation"]=["The password confirmation field is required."];
+    }
+    
     if(password != password_confirmation){
         errorCode = 1;
 
-        error.push({
-            "password": [
-                "The password confirmation does not match."
-            ]
-        })
+        error['password']=["The password confirmation does not match."]
     }
     
 
@@ -168,7 +272,7 @@ const register = async (req,res) =>{
 
                 var [signup,signupbonus] = await connection.query("SELECT `value` FROM `user_settings`")
 
-                
+               
 
                 //registration
                 
@@ -184,6 +288,17 @@ const register = async (req,res) =>{
                 //referal
                 var referal = 0;
                 var userId = result.insertId;
+
+                var axios_data = [];
+                if(phone != '' && phone != null || phone != undefined){
+                    var otp = generateOTP();
+                    var message = "Welcome to ktgamez, Your OTP is "+otp+". Do not share this otp with anyone."
+                    var transactionId = "2349000000100"+Math.floor((Math.random() * 100000000) + 1);
+                    var clientCorrelator = "RANDOM"+Math.floor((Math.random() * 100000000) + 1);
+                    var [updateuser,ufield] = await connection.query("UPDATE `users` SET `phone`='234"+phone+"',`verification_code`='"+otp+"' WHERE `id`='"+userId+"'");
+                    axios_data = await axios_api(phone,message,transactionId,clientCorrelator);
+                }
+
                 if(referral_code != '' && referral_code != null && referral_code != undefined){
                     var [check,cfield] = await connection.query("SELECT `id` FROM `users` WHERE `referral_code`='"+referral_code+"'")
                     if(check.length>0){
@@ -206,7 +321,7 @@ const register = async (req,res) =>{
                 
                 var loginTIme = moment().format("YYYY MM DD hh:mm:ss");
                 //var send_mail_function = send_mail("aryan.server5638@gmail.com",email,"You are successfully registered with ktgamez","You are successfully registered with ktgamez with this email address.");
-                jwt.sign({result},"secretkey",(err,token)=>{
+                await jwt.sign({result},"secretkey",(err,token)=>{
                     console.log("Email: "+email)
                     if(err){
                         console.log(err)
@@ -237,11 +352,11 @@ const register = async (req,res) =>{
                 
 
 
-                jwt.sign({loginTIme,result},"secretkey",{ expiresIn: '48h'},(err,token)=>{
+                await jwt.sign({loginTIme,result},"secretkey",{ expiresIn: '48h'}, async (err,token)=>{
                     if(err){
                         res.send({"errors": "Something went wrong."})
                     }else{
-                        res.send({"success": "user created",token:token})
+                        res.send({axios_data,"success": "user created",token:token})
                     }
                 })
                 
@@ -250,9 +365,9 @@ const register = async (req,res) =>{
         connection.end();
     }
     
-    }catch(err){
-        res.send({ "error": "Something went wrong."})
-    }
+    // }catch(err){
+    //     res.send({ "errors": "Something went wrong."})
+    // }
 };
 const login = async (req,res) =>{
     try{
@@ -351,7 +466,7 @@ const leaderboard = async (req,res) =>{
     try{
         const connection = await sqlConnect();
 
-        var [result,field] = await connection.query("SELECT `game_leaderboards`.`id`,`game_leaderboards`.`user_id`,`game_leaderboards`.`game_id`,`game_points`.`points`,`points_type`,`game_leaderboards`.`created_at`,`name`,`email`,`avatar`,`score` as `highscore` FROM `game_leaderboards` LEFT JOIN `users` ON `game_leaderboards`.`user_id`=`users`.`id` LEFT JOIN `game_points` ON `game_leaderboards`.`user_id`=`game_points`.`user_id` ORDER BY `score` DESC");
+        var [result,field] = await connection.query("SELECT `game_leaderboards`.`id`,`game_leaderboards`.`user_id`,`game_leaderboards`.`game_id`,`game_points`.`points`,`points_type`,`game_leaderboards`.`created_at`,`name`,`email`,`avatar`,`score` as `highscore` FROM `game_leaderboards` LEFT JOIN `users` ON `game_leaderboards`.`user_id`=`users`.`id` LEFT JOIN `game_points` ON `game_leaderboards`.`user_id`=`game_points`.`user_id` GROUP BY `game_leaderboards`.`id` ORDER BY `score` DESC");
         res.send([result])
         connection.end();
     }catch(err){
@@ -368,7 +483,7 @@ const genre = async (req,res) =>{
         if(game_id == null || game_id == undefined || game_id == ""){
             res.send({"message":"game_id is required"})
         }else{
-            console.log("SELECT * FROM `giro_games` WHERE `id`='"+game_id+"'")
+            
             var [games,game_field] = await connection.query("SELECT * FROM `game_genres` WHERE `id`='"+game_id+"'");
             if(games.length>0){
             res.send({
@@ -390,14 +505,27 @@ const genre = async (req,res) =>{
     }
 };
 const points = async (req,res) =>{
-    try{
-        const connection = await sqlConnect();
-        var [result,field] = await connection.query("SELECT * FROM `game_points` WHERE 1")
-        res.send([result])
-        connection.end();
-    }catch(err){
-        res.send({"message":"Something went wrong"})
-    }
+    jwt.verify(req.token,"secretkey",async (err,data)=>{
+        if(err){
+            res.send({"message":"Unauthenticated"})
+        }else{
+            try{
+                var userId = data.result[0].id;
+                
+                const connection = await sqlConnect();
+                var [result,field] = await connection.query("SELECT * FROM `game_points` WHERE `user_id`="+userId+"")
+                if(result.length>0){
+                    res.send([result])
+                }else{
+                    res.send({"message":"History not found."})
+
+                }
+                connection.end();
+            }catch(err){
+                res.send({"message":"Something went wrong"})
+            }
+        }
+    });
 };
 const play = async (req,res) =>{
     jwt.verify(req.token,"secretkey", async (err,data)=>{
@@ -429,7 +557,7 @@ const play = async (req,res) =>{
                         "updated_at":game[0]['updated_at'],
                     })
                 }else{
-                    res.send({"message":"Something went wrong"})
+                    res.send({"message":"Game not found"})
                 }
                 }
                 connection.end();
@@ -444,11 +572,12 @@ const play = async (req,res) =>{
 const playandwin = async (req,res) =>{
     jwt.verify(req.token,"secretkey", async (err,data)=>{
         if(err){
-            res.send("Unauthinticated")
+            res.send({
+                "message": "Unauthenticated."
+            })
         }else{
-            try{
+            //try{
                 const connection = await sqlConnect();
-                
                 var [check,cfield] = await connection.query("SELECT `id`,`email_verified_at` FROM `users` WHERE `id`='"+data.result[0].id+"'")
 
                 if(check[0]['email_verified_at']==null){
@@ -458,10 +587,10 @@ const playandwin = async (req,res) =>{
                 res.send([completegames])
                 }
                 connection.end();
-            }catch(err){
-                res.send({"message":"Something went wrong"})
+            // }catch(err){
+            //     res.send({"message":"Something went wrong"})
 
-            }
+            // }
             
         }
     })
@@ -569,17 +698,17 @@ const submitgamescore = async (req,res) =>{
                 }
                 if(id==null || id == undefined || id ==""){
                     errorCode=1;
-                    error["email"]=["The game id field is required."];
+                    error["game_id"]=["The game id field is required."];
                     
                 }
                 if(score==null || score == undefined || score ==""){
                     
                     errorCode=1;
-                    error["email"]=["The score field is required."];
+                    error["score"]=["The score field is required."];
                 }
                 if(score==0){
                     errorCode=1;
-                    error["email"]=["Score must be greater than zero."];
+                    error["score"]=["Score must be greater than zero."];
                     
                 }
                 if(errorCode==1){
@@ -674,7 +803,7 @@ const start = async (req,res) =>{
     jwt.verify(req.token,"secretkey", async (err,data)=>{
         if(err){
             res.send({
-                "message": "Unauthenticated."
+                "message": "Unauthenticated"
             })
         }else{
             try{
@@ -684,10 +813,19 @@ const start = async (req,res) =>{
                 if(check[0]['email_verified_at']==null){
                     res.send({"message":"Please verify your email first."})
                 }else if(id==null || id == undefined || id ==""){
-                    res.send({"message":"id is required."})
+                    res.send({
+                        "message": "The given data was invalid.",
+                        "errors": {
+                            "game_id": [
+                                "The game id field is required."
+                            ]
+                        }
+                    })
                 }else{
                     var [game,gamefield] = await connection.query("SELECT * FROM `compete_games` WHERE `id`='"+id+"'")
                     
+                    if(game.length>0){
+
                     //Deduct entry tokens
                     var [updateuser,ufield] = await connection.query("UPDATE `users` SET `tokens`=(`tokens`-"+game[0]['entry_tokens']+") WHERE `id`='"+data.result[0].id+"'")
                     
@@ -699,6 +837,10 @@ const start = async (req,res) =>{
                         "gameid": "1",
                         "userid": 33
                     })
+                }else{
+                res.send({"message":"Invalid Game id"})
+
+                }
                 }
                 connection.end();
             }catch(err){
@@ -742,7 +884,6 @@ const start2 = async (req,res) =>{
         }
     })
 };
-
 const fotgotpassword = async (req,res) =>{
     try{
 
@@ -948,8 +1089,8 @@ const kttokenhistory = async (req,res) =>{
                 
                 const connection = await sqlConnect();
 
-                var [result,data] = await connection.query("SELECT `id`,`tokens`,`tokens_type`,`created_at` FROM `game_tokens` WHERE `user_id`='"+userId+"' ORDER BY `created_at` DESC");
-                res.send({result})
+                var [result,data] = await connection.query("SELECT * FROM `game_tokens` WHERE `user_id`='"+userId+"' ORDER BY `created_at` DESC");
+                res.send(result)
                 connection.end();
             }catch(err){
                     res.send({
@@ -1088,8 +1229,85 @@ const verifyemail = async (req,res) =>{
         }
     })
 };
+const verifyotp = async (req,res) =>{
+    jwt.verify(req.token,"secretkey", async (err,data)=>{
+        if(err){
+            res.send({"message":"Unauthinticated"})
+        }else{
+            
+            try{
+                console.log(data);
+                var otp = req.body.otp;
+                const connection = await sqlConnect();
+                var [check,cfield] = await connection.query("SELECT `id`,`phone_verified_at` FROM `users` WHERE `id`='"+data.result[0].id+"' AND `verification_code`='"+otp+"'")
+                
+                if(check.length>0){
+                    if(check[0]['phone_verified_at']==null || check[0]['phone_verified_at']==undefined || check[0]['phone_verified_at']==""){
+                    var [update,ufield] = await connection.query("UPDATE `users` SET `phone_verified_at`='"+moment().format("YYYY-MM-DD hh:mm:ss")+"' WHERE `id`='"+data.result[0].id+"'")
+                    res.send({"message":"OTP Verified successfully."});
+                    }else{
+                    res.send({"message":"OTP already verified."});
+
+                    }
+                }else{
+                    res.send({"message":"Invalid OTP"})
+                }
+                
+                connection.end();
+            
+
+            }catch(err){
+                res.send({"message":"Something went wrong"})
+            }
+        }
+    })
+};
+const requestsubscription = async (req,res) =>{
+    jwt.verify(req.token,"secretkey", async (err,data)=>{
+        if(err){
+            res.send({"message":"Unauthinticated"})
+        }else{
+            
+            try{
+                //console.log(data);
+                const connection = await sqlConnect();
+                var [check,cfield] = await connection.query("SELECT `id`,`phone` FROM `users` WHERE `id`='"+data.result[0].id+"'")
+                var transactionId = "2349000000100"+(Math.floor(Math.random()*100000000))+1
+                var userId = data.result[0].id;
+                var phone = check[0]['phone'];
+                var [subreq,subfield] = await connection.query("INSERT INTO `subscription_requests` SET `subscription_id`='"+transactionId+"',`user_id`='"+userId+"',`created_at`='"+moment().format("YYYY-MM-DD hh:mm:ss")+"',`updated_at`='"+moment().format("YYYY-MM-DD hh:mm:ss")+"'")
+                var response = await subscribe_on_demand(phone,transactionId);
+                res.send({"message":"Success",response})
+                
+                connection.end();
+            
+
+            }catch(err){
+                res.send({"message":"Something went wrong"})
+            }
+        }
+    })
+}
 
 
+const loginwithotp = async (req,res) =>{
+    try{
+        var number = req.body.number;
+        if(number == '' || number == null || number == undefined){
+            res.send({"message":"number required"})
+        }else{
+            const connection = sqlConnect();
+            var otp = generateOTP()
+            axios_api();
+            // var options = {authorization : process.env.OTP_API_KEY , message : 'Thanks for registerting with ktgamez. Your OTP is '+ otp,  numbers : [number]} 
+            // await fast2sms.sendMessage(options) //Asynchronous Function.
+            res.send({"message":"OTP Sent"})
+            connection.end();
+        }
+    }catch(Err){
+        res.send(Err)
+    }
+}
 
 
 const test = async (req,res) =>{
@@ -1129,8 +1347,9 @@ module.exports = {
     resetpassword,
     resetpassword2,
     verifyemail,
-    
+    verifyotp,
+    requestsubscription,
    
 
-    test,
+    loginwithotp,
 }

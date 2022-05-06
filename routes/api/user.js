@@ -12,11 +12,11 @@ module.exports = function(app){
 
     app.get("/api/play/:id",verifyToken, api.play);
 
-    app.get("/api/points" ,api.points);
+    app.get("/api/points",verifyToken ,api.points);
 
-    app.get("api/index" ,api.leaderboard);
+    app.get("/api/index" ,api.leaderboard);
 
-    app.get("api/ktLeaderboard" ,api.leaderboard);
+    app.get("/api/ktLeaderboard" ,api.leaderboard);
 
     app.get("/api/games",verifyToken, api.playandwin);
 
@@ -48,11 +48,6 @@ module.exports = function(app){
 
     app.post("/api/email/verification-notification",verifyToken,api.verifyemailaccount);
 
-
-    
-
-
-
     app.get("/api/kttokenhistory", verifyToken ,api.kttokenhistory);
 
     app.get("/api/ktpointhistory", verifyToken ,api.ktpointshistory);
@@ -61,9 +56,7 @@ module.exports = function(app){
 
     app.post("/api/facebooklogin" ,api.facebooklogin);
 
-
     app.post("/api/forgotpassword" ,api.fotgotpassword);
-
 
     app.get("/verifypassword/:token",verifyToken2, api.resetpassword);
 
@@ -71,15 +64,13 @@ module.exports = function(app){
 
     app.get("/verifyemail/:token",verifyToken2, api.verifyemail);
 
-    
+    app.post("/api/verifyotp",verifyToken, api.verifyotp);
 
+    app.post("/api/requestsubscription",verifyToken, api.requestsubscription);
 
+   
+    app.post("/api/otpsend", api.loginwithotp);
 
-
-
-
-
-    app.get("/test", api.test);
 
     //other routes..
 }

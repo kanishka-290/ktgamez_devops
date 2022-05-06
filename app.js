@@ -6,6 +6,7 @@ const app = express();
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }))
 app.set('view engine', 'ejs');
+
 const whitelist = ["http://localhost:3001","http://localhost:3000"]
 const corsOptions = {
   origin: function (origin, callback) {
@@ -17,15 +18,16 @@ const corsOptions = {
   },
   credentials: true,
 }
-app.use(cors(corsOptions))
-// const http = require('http').Server(app);
-// const io = require('socket.io')(http);
+app.use(cors(corsOptions));
 
 app.get("/",function (req,res) {
     res.send("Hello user");
 })
+module.exports = app
+
+
 require('./routes/api/user')(app);
 
 app.listen(3000,function(){
     console.log("App is up and running");
-})
+});
