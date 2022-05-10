@@ -576,7 +576,7 @@ const playandwin = async (req,res) =>{
                 "message": "Unauthenticated."
             })
         }else{
-            //try{
+            try{
                 const connection = await sqlConnect();
                 var [check,cfield] = await connection.query("SELECT `id`,`email_verified_at` FROM `users` WHERE `id`='"+data.result[0].id+"'")
 
@@ -587,10 +587,10 @@ const playandwin = async (req,res) =>{
                 res.send([completegames])
                 }
                 connection.end();
-            // }catch(err){
-            //     res.send({"message":"Something went wrong"})
+            }catch(err){
+                res.send({"message":"Something went wrong"})
 
-            // }
+            }
             
         }
     })
@@ -884,7 +884,7 @@ const start2 = async (req,res) =>{
         }
     })
 };
-const fotgotpassword = async (req,res) =>{
+const forgotpassword = async (req,res) =>{
     try{
 
         var email = req.body.email || "";
@@ -903,14 +903,14 @@ const fotgotpassword = async (req,res) =>{
         };
         const token = jwt.sign(payload,process.env.SECRET_KEY,{expiresIn:"15m"})
         var generateLink = "http://localhost:3000/verifypassword/"+token;
-        console.log(generateLink)
+        //console.log(generateLink)
         //send_mail("aryan.server5638@gmail.com",email,"Reset your password","Reset your password using this link  "+generateLink)
         
         ejs.renderFile("D:\\Giro/ktgamez/views/reset_password.ejs", { generateLink: generateLink }, function (err, data) {
             if (err) {
                 console.log(err);
             } else {
-                console.log(email)
+                //console.log(email)
                 var mainOptions = {
                     from: 'aryan.server5638@gmail.com',
                     to: email,
@@ -1309,11 +1309,6 @@ const loginwithotp = async (req,res) =>{
     }
 }
 
-
-const test = async (req,res) =>{
-    res.render("welcome.ejs",{generateLink :"Aryan"})
-};
-
 module.exports = {
     login,
     register,
@@ -1343,7 +1338,7 @@ module.exports = {
     googlelogin,
     facebooklogin,
     
-    fotgotpassword,
+    forgotpassword,
     resetpassword,
     resetpassword2,
     verifyemail,
