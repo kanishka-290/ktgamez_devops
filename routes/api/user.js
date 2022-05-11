@@ -37,14 +37,6 @@ module.exports = function(app){
     app.post("/api/compete/:id",verifyToken, api.start2);
 
 
-    
-
-    
-
-
-      
-
-    
 
     app.post("/api/email/verification-notification",verifyToken,api.verifyemailaccount);
 
