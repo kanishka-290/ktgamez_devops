@@ -78,12 +78,29 @@ cron.schedule("0 0 */6 * * *",async function() {
 
 
 // create the connection to database
+// function sqlConnect(){
+//     const conn = mysql2.createConnection({
+//         host: process.env.HOST,
+//         user: process.env.USERNAME,
+//         password:process.env.PASSWORD,
+//         database: process.env.DB_NAME,
+//         port:process.env.PORT
+//     });
+//     if(conn){
+//         //console.log("Connected to database")
+//     return conn;
+//     }else{
+//         console.log("Database connection failed.")
+//     }
+// }
+
 function sqlConnect(){
     const conn = mysql2.createConnection({
-        host: process.env.HOST,
-        user: "root",
-        password:process.env.PASSWORD,
-        database: process.env.DB_NAME,
+        host: "bcekzt08j9eufyrurags-mysql.services.clever-cloud.com",
+        user: "u7vir28yjmspan4h",
+        password:"iMZqge5h32pJav92de4g",
+        database: "bcekzt08j9eufyrurags",
+        port:3306
     });
     if(conn){
         //console.log("Connected to database")
@@ -370,7 +387,7 @@ const register = async (req,res) =>{
     // }
 };
 const login = async (req,res) =>{
-    try{
+    //try{
       var email = req.body.email;
       var password = req.body.password;
       
@@ -423,9 +440,9 @@ const login = async (req,res) =>{
       
       connection.end();
       }
-    }catch(err){
-        res.send({ "error": "Something went wrong."})
-    }
+    // }catch(err){
+    //     res.send({ "error": "Something went wrong."})
+    // }
 };
 const userdetails = async (req,res) =>{
     jwt.verify(req.token,"secretkey",async (err,data)=>{
