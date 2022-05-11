@@ -30,6 +30,11 @@ module.exports = app
 
 require('./routes/api/user')(app);
 
-app.listen(3000,function(){
+let PORT = process.env.PORT
+if(PORT == null || PROT == undefined || PORT == ""){
+  PORT = 3000
+}
+
+app.listen(PORT,function(){
     console.log("App is up and running");
 });
