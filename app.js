@@ -22,7 +22,8 @@ const corsOptions = {
 app.use(cors(corsOptions));
 
 app.get("/",function (req,res) {
-    res.send("Hello user");
+    //res.send("Hello user");
+    res.render("notfound.ejs")
 })
 store.set("condition",false)
 module.exports = app
