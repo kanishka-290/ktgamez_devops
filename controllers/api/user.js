@@ -344,8 +344,8 @@ const register = async (req,res) =>{
                         console.log(err)
                     }else{
                         var link = "http://ktgamez.herokuapp.com/verifyemail/"+token
-                        console.log(__dirname)
-                        ejs.renderFile("D:\\Giro/ktgamez/views/welcome.ejs", { link: link }, function (err, data) {
+                        console.log("../../"+__dirname+"/views/welcome.ejs")
+                        ejs.renderFile("../../"+__dirname+"/views/welcome.ejs", { link: link }, function (err, data) {
                             if (err) {
                                 console.log(err);
                             } else {
