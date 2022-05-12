@@ -5,6 +5,10 @@ function verifyToken(req,res,next){
         
         res.send({"message":"Unauthenticated"})
     }else{
+        // var str = token;
+        // var array = str.split(" ");
+        // //console.log(array[1]);
+        // req.token = array[1]
         req.token = token
 
         next();

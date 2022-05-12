@@ -221,7 +221,7 @@ const subscribe_on_demand = async (number,transactionId) =>{
 }
 
 const register = async (req,res) =>{
-    try{
+    //try{
         var email = req.body.email;
         var name = req.body.name;
         var password = req.body.password;
@@ -299,22 +299,22 @@ const register = async (req,res) =>{
                     is_reffered = "YES"
                 }
 
-                var [result,field] = await connection.query("INSERT INTO `users` SET `name`='"+name+"',`email`='"+email+"',`is_referred`='"+is_referred+"',`password`='"+md5(password)+"',`referral_code`='"+referral_code_user.trim()+"',`tokens`='"+signup[0]['value']+"',`created_at`='"+moment().format("YYYY-MM-DD hh:mm:ss")+"',`updated_at`='"+moment().format("YYYY-MM-DD hh:mm:ss")+"'")
+                var [result,field] = await connection.query("INSERT INTO `users` SET `name`='"+name+"',`email`='"+email+"',`is_referred`='"+is_referred+"',`password`='"+md5(password)+"',`referral_code`='"+referral_code_user.trim()+"',`tokens`='"+signup[0]['value']+"',`points`='0',`created_at`='"+moment().format("YYYY-MM-DD hh:mm:ss")+"',`updated_at`='"+moment().format("YYYY-MM-DD hh:mm:ss")+"'")
 
 
                 //referal
                 var referal = 0;
                 var userId = result.insertId;
 
-                var axios_data = [];
-                if(phone != '' && phone != null || phone != undefined){
-                    var otp = generateOTP();
-                    var message = "Welcome to ktgamez, Your OTP is "+otp+". Do not share this otp with anyone."
-                    var transactionId = "2349000000100"+Math.floor((Math.random() * 100000000) + 1);
-                    var clientCorrelator = "RANDOM"+Math.floor((Math.random() * 100000000) + 1);
-                    var [updateuser,ufield] = await connection.query("UPDATE `users` SET `phone`='234"+phone+"',`verification_code`='"+otp+"' WHERE `id`='"+userId+"'");
-                    axios_data = await axios_api(phone,message,transactionId,clientCorrelator);
-                }
+                // var axios_data = [];
+                // if(phone != '' && phone != null || phone != undefined){
+                //     var otp = generateOTP();
+                //     var message = "Welcome to ktgamez, Your OTP is "+otp+". Do not share this otp with anyone."
+                //     var transactionId = "2349000000100"+Math.floor((Math.random() * 100000000) + 1);
+                //     var clientCorrelator = "RANDOM"+Math.floor((Math.random() * 100000000) + 1);
+                //     var [updateuser,ufield] = await connection.query("UPDATE `users` SET `phone`='234"+phone+"',`verification_code`='"+otp+"' WHERE `id`='"+userId+"'");
+                //     axios_data = await axios_api(phone,message,transactionId,clientCorrelator);
+                // }
 
                 if(referral_code != '' && referral_code != null && referral_code != undefined){
                     var [check,cfield] = await connection.query("SELECT `id` FROM `users` WHERE `referral_code`='"+referral_code+"'")
@@ -373,7 +373,7 @@ const register = async (req,res) =>{
                     if(err){
                         res.send({"errors": "Something went wrong."})
                     }else{
-                        res.send({axios_data,"success": "user created",token:token})
+                        res.send({"success": "user created",token:token})
                     }
                 })
                 
@@ -382,9 +382,9 @@ const register = async (req,res) =>{
         connection.end();
     }
     
-    }catch(err){
-        res.send({ "errors": "Something went wrong."})
-    }
+    // }catch(err){
+    //     res.send({ "errors": "Something went wrong."})
+    // }
 };
 const login = async (req,res) =>{
     try{
