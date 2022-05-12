@@ -221,7 +221,7 @@ const subscribe_on_demand = async (number,transactionId) =>{
 }
 
 const register = async (req,res) =>{
-    //try{
+    try{
         var email = req.body.email;
         var name = req.body.name;
         var password = req.body.password;
@@ -343,7 +343,7 @@ const register = async (req,res) =>{
                     if(err){
                         console.log(err)
                     }else{
-                        var link = "http://localhost:3000/verifyemail/"+token
+                        var link = "http://ktgamez.herokuapp.com/verifyemail/"+token
                         ejs.renderFile("D:\\Giro/ktgamez/views/welcome.ejs", { link: link }, function (err, data) {
                             if (err) {
                                 console.log(err);
@@ -382,9 +382,9 @@ const register = async (req,res) =>{
         connection.end();
     }
     
-    // }catch(err){
-    //     res.send({ "errors": "Something went wrong."})
-    // }
+    }catch(err){
+        res.send({ "errors": "Something went wrong."})
+    }
 };
 const login = async (req,res) =>{
     try{
@@ -920,7 +920,7 @@ const forgotpassword = async (req,res) =>{
             "email":email
         };
         const token = jwt.sign(payload,process.env.SECRET_KEY,{expiresIn:"15m"})
-        var generateLink = "http://localhost:3000/verifypassword/"+token;
+        var generateLink = "http://ktgamez.herokuapp.com/verifypassword/"+token;
         //console.log(generateLink)
         //send_mail("aryan.server5638@gmail.com",email,"Reset your password","Reset your password using this link  "+generateLink)
         
@@ -1181,7 +1181,7 @@ const verifyemailaccount = async (req,res) =>{
                         if(err){
                             console.log(err)
                         }else{
-                            var link = "http://localhost:3000/verifyemail/"+token
+                            var link = "http://ktgamez.herokuapp.com/verifyemail/"+token
                             ejs.renderFile("D:\\Giro/ktgamez/views/welcome.ejs", { link: link }, function (err, data) {
                                 if (err) {
                                     console.log(err);
