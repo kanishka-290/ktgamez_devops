@@ -925,7 +925,7 @@ const forgotpassword = async (req,res) =>{
         //console.log(generateLink)
         //send_mail("aryan.server5638@gmail.com",email,"Reset your password","Reset your password using this link  "+generateLink)
         
-        ejs.renderFile("D:\\Giro/ktgamez/views/reset_password.ejs", { generateLink: generateLink }, function (err, data) {
+        ejs.renderFile("views/reset_password.ejs", { generateLink: generateLink }, function (err, data) {
             if (err) {
                 console.log(err);
             } else {
