@@ -30,7 +30,7 @@ module.exports = function(app){
     
     app.post("/api/compete",verifyToken, api.submitgamescore);
     
-    app.post("/api/search", api.searchgame);
+    app.get("/api/search", api.searchgame);
     
     app.get("/api/games" ,api.games);
 
