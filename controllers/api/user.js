@@ -761,14 +761,11 @@ const submitgamescore = async (req,res) =>{
 };
 const searchgame = async (req,res) =>{
     try{
-        var keyword = req.body.keyword || "";
+        
         const connection = await sqlConnect();
-        var [result,field] = await connection.query("SELECT * FROM `giro_games` LEFT JOIN `game_genres` ON `giro_games`.`genre_id`=`game_genres`.`id` WHERE `game_name` LIKE '%"+keyword+"%'")
-        if(result.length>0){
+        var [result,field] = await connection.query("SELECT `giro_games`.`id`,`giro_games`.`genre_id`,`giro_games`.`game_name`,`giro_games`.`game_description`,`giro_games`.`game_cover_url`,`giro_games`.`game_play_url`,`giro_games`.`genre_slider`,`giro_games`.`game_status`,`giro_games`.`created_at`,`giro_games`.`updated_at`,`game_genres`.`genre_name`,`game_genres`.`genre_status` FROM `giro_games` LEFT JOIN `game_genres` ON `giro_games`.`genre_id`=`game_genres`.`id`")
+        
             res.send(result)
-        }else{
-            res.send({"message":"No Games found"})
-        }
         
         connection.end();
     }catch(err){
@@ -1180,6 +1177,7 @@ const verifyemailaccount = async (req,res) =>{
                             console.log(err)
                         }else{
                             var link = "http://ktgamez.herokuapp.com/verifyemail/"+token
+                            console.log(link)
                             ejs.renderFile("views/welcome.ejs", { link: link }, function (err, data) {
                                 if (err) {
                                     console.log(err);
