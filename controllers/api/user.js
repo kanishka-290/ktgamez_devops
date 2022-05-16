@@ -109,7 +109,6 @@ function sqlConnect(){
         console.log("Database connection failed.")
     }
 }
-
 // Generate Refer code
 function generateString() {
     const characters ='ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';

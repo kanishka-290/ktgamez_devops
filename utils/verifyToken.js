@@ -1,15 +1,16 @@
 function verifyToken(req,res,next){
-    var token = req.headers.token;
+    
+    var token = req.headers.authorization;
 
     if(token == null || token == undefined || token == ""){
         
         res.send({"message":"Unauthenticated"})
     }else{
-        // var str = token;
-        // var array = str.split(" ");
-        // //console.log(array[1]);
-        // req.token = array[1]
-        req.token = token
+        var str = token;
+        var array = str.split(" ");
+        //console.log(array[1]);
+        req.token = array[1]
+        //req.token = token
 
         next();
     }
