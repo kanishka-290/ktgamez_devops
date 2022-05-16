@@ -28,7 +28,7 @@ describe('Game Search', () => {
     //with keyword
     it("with keyword", (done)=>{
         chai.request(app)
-        .post("/api/search")
+        .get("/api/search")
         .send({"keyword":"Battle"})
         .end(function(err, res){
             res.should.have.status(200);

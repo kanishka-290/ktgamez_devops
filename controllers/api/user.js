@@ -556,9 +556,7 @@ const play = async (req,res) =>{
                 const connection = await sqlConnect();
                 var [check,cfield] = await connection.query("SELECT `id`,`email_verified_at` FROM `users` WHERE `id`='"+data.result[0].id+"'")
                 var id = req.params.id || "";
-                if(check[0]['email_verified_at']==null){
-                    res.send({"message":"Please verify your email first."})
-                }else if(id==null || id == undefined || id ==""){
+               if(id==null || id == undefined || id ==""){
                     res.send({"message":"id is required."})
                 }else{
                     var [game,gamefield] = await connection.query("SELECT * FROM `giro_games` WHERE `id`='"+id+"'")
@@ -1258,7 +1256,7 @@ const verify_email = async (req,res) =>{
                 var [check,fields] = await connection.query("SELECT `id`,`email_verified_at` FROM `users` WHERE `id`='"+data.result[0]['id']+"'")
                 if(check[0]['email_verified_at']==null || check[0]['email_verified_at']==undefined || check[0]['email_verified_at']==""){
                     
-                    var [update,field] = await connection.query("UPDATE `users` SET `email_verified_at`='"+moment().format("YYYY-MM-DD hh:mm:ss")+"' WHERE `id`='"+data.result[0]['id']+"'")
+                    //var [update,field] = await connection.query("UPDATE `users` SET `email_verified_at`='"+moment().format("YYYY-MM-DD hh:mm:ss")+"' WHERE `id`='"+data.result[0]['id']+"'")
                     res.send({"message": "Successfully verified"})
                 }else{
                     res.send({"message": "Already verified"})

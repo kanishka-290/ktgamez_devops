@@ -40,7 +40,7 @@ module.exports = function(app){
 
     app.post("/api/email/verification-notification",verifyToken,api.verifyemailaccount);
 
-    app.get("/api/kttokenhistory", verifyToken ,api.kttokenhistory);
+    app.get("/api/tokens", verifyToken ,api.kttokenhistory);
 
     app.get("/api/ktpointhistory", verifyToken ,api.ktpointshistory);
         

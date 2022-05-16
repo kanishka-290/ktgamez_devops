@@ -15,7 +15,7 @@ describe('KT Token History', () => {
     //Without Token
     it("Without Token", (done)=>{
         chai.request(app)
-        .get("/api/kttokenhistory")
+        .get("/api/tokens")
         .end(function(err, res){
             res.should.have.status(200);
             res.body.should.be.a("object");
@@ -28,7 +28,7 @@ describe('KT Token History', () => {
     //with invalid token
     it("with invalid token", (done)=>{
         chai.request(app)
-        .get("/api/kttokenhistory")
+        .get("/api/tokens")
         .set("token","123")
         .end(function(err, res){
             res.should.have.status(200);
@@ -42,7 +42,7 @@ describe('KT Token History', () => {
     //with valid token
     it("with valid token", (done)=>{
         chai.request(app)
-        .get("/api/kttokenhistory")
+        .get("/api/tokens")
         .set("token",store("token"))
         .end(function(err, res){
             res.should.have.status(200);
