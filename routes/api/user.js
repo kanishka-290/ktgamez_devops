@@ -56,6 +56,9 @@ module.exports = function(app){
 
     app.get("/verifyemail/:token",verifyToken2, api.verifyemail);
 
+    app.get("/api/verify-email/:id",verifyToken, api.verify_email);
+    
+
     app.post("/api/verifyotp",verifyToken, api.verifyotp);
 
     app.post("/api/requestsubscription",verifyToken, api.requestsubscription);

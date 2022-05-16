@@ -16,7 +16,7 @@ describe('Game Search', () => {
     //without keyword
     it("without keyword", (done)=>{
         chai.request(app)
-        .post("/api/search")
+        .get("/api/search")
         .end(function(err, res){
             res.should.have.status(200);
             res.body.should.be.a("array");

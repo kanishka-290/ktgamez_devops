@@ -1247,6 +1247,32 @@ const verifyemail = async (req,res) =>{
         }
     })
 };
+const verify_email = async (req,res) =>{
+    jwt.verify(req.token,"secretkey", async (err,data)=>{
+        if(err){
+            res.send({"message":"Unauthenticated"})
+        }else{
+            //console.log(data);
+            try{
+                const connection = await sqlConnect();
+                var [check,fields] = await connection.query("SELECT `id`,`email_verified_at` FROM `users` WHERE `id`='"+data.result[0]['id']+"'")
+                if(check[0]['email_verified_at']==null || check[0]['email_verified_at']==undefined || check[0]['email_verified_at']==""){
+                    
+                    var [update,field] = await connection.query("UPDATE `users` SET `email_verified_at`='"+moment().format("YYYY-MM-DD hh:mm:ss")+"' WHERE `id`='"+data.result[0]['id']+"'")
+                    res.send({"message": "Successfully verified"})
+                }else{
+                    res.send({"message": "Already verified"})
+                   
+                }
+                connection.end();
+            }catch(err){
+                res.send({"message": "Something went wrong"})
+            }
+            
+        }
+    })
+}
+
 const verifyotp = async (req,res) =>{
     jwt.verify(req.token,"secretkey", async (err,data)=>{
         if(err){
@@ -1349,6 +1375,7 @@ module.exports = {
 
 
     verifyemailaccount,
+    verify_email,
     kttokenhistory,
     ktpointshistory,
     

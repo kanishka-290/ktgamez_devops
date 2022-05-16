@@ -64,7 +64,7 @@ describe('Verify Email', () => {
         .end(function(err, res){
             res.should.have.status(200);
             res.body.should.be.a("object");
-            res.body.should.have.property("message","We have sent you a fresh email verification link to your email. please verify your email account.");
+            res.body.should.have.property("message","A fresh verification link has been sent to your email address.");
             done();
         }
         )
