@@ -533,9 +533,9 @@ const points = async (req,res) =>{
                 const connection = await sqlConnect();
                 var [result,field] = await connection.query("SELECT * FROM `game_points` WHERE `user_id`="+userId+"")
                 if(result.length>0){
-                    res.send([result])
+                    res.send(result)
                 }else{
-                    res.send({"message":"History not found."})
+                    res.send([])
 
                 }
                 connection.end();
