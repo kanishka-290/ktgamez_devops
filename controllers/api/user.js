@@ -1205,7 +1205,7 @@ const verifyemailaccount = async (req,res) =>{
                                 });
                         }
                     })
-                    res.send({"message":"We have sent you a fresh email verification link to your email. please verify your email account."})
+                    res.send({"message":"A fresh verification link has been sent to your email address."})
                     
                 }else{
                     res.send({
