@@ -747,7 +747,7 @@ const submitgamescore = async (req,res) =>{
 
                     }
                     var [game,gamefield] = await connection.query("SELECT * FROM `compete_games` WHERE `id`='"+id+"'");
-                    res.send([game])
+                    res.send(game)
                 }
                 connection.end();
             }catch(err){
