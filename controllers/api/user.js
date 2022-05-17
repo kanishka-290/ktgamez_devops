@@ -706,7 +706,7 @@ const submitgamescore = async (req,res) =>{
                 var errorCode = 0;
                 const connection = await sqlConnect();
                 var [check,cfield] = await connection.query("SELECT `id`,`email_verified_at` FROM `users` WHERE `id`='"+data.result[0].id+"'")
-                var id = req.body.id || "";
+                var id = req.body.game_id || "";
                 var score = req.body.score || "";
                 if(check[0]['email_verified_at']==null){
                     errorCode=1;
@@ -976,7 +976,7 @@ const resetpassword2 = async (req,res) =>{
             const connection = await sqlConnect();
             var [update,ufields] = await connection.query("UPDATE `users` SET `password`='"+md5(req.body.password1)+"' WHERE `id`='"+data.userId+"'")
             connection.end();
-            res.render("success.ejs",{email:data.email})
+            res.render("success.ejs")
         }
     })
     
@@ -1182,6 +1182,7 @@ const verifyemailaccount = async (req,res) =>{
                                 if (err) {
                                     console.log(err);
                                 } else {
+                                    //console.log(data)
                                     console.log(email)
                                     var mainOptions = {
                                         from: 'aryan.server5638@gmail.com',
@@ -1198,7 +1199,7 @@ const verifyemailaccount = async (req,res) =>{
                                     });
                                 }
                                 
-                                });
+                            });
                         
                             
                         }
