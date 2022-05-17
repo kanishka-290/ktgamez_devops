@@ -1199,6 +1199,8 @@ const verifyemailaccount = async (req,res) =>{
                                 }
                                 
                                 });
+                        
+                            
                         }
                     })
                     res.send({"message":"A fresh verification link has been sent to your email address."})

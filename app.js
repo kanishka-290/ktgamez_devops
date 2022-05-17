@@ -20,7 +20,6 @@ const corsOptions = {
   credentials: true,
 }
 app.use(cors(corsOptions));
-
 app.get("/",function (req,res) {
     //res.send("Hello user");
     res.render("notfound.ejs")
