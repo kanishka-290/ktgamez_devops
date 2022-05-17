@@ -746,9 +746,8 @@ const submitgamescore = async (req,res) =>{
                         var [update,ufield] = await connection.query("INSERT INTO `game_leaderboards` SET `score`='"+score+"',`user_id`='"+data.result[0].id+"',`game_id`='"+id+"',`created_at`='"+moment().format("YYYY-MM-DD hh:mm:ss")+"',`updated_at`='"+moment().format("YYYY-MM-DD hh:mm:ss")+"'");
 
                     }
-                    res.send({
-                        "success": "Successfully submitted the score."
-                    })
+                    var [game,gamefield] = await connection.query("SELECT * FROM `compete_games` WHERE `id`='"+id+"'");
+                    res.send([game])
                 }
                 connection.end();
             }catch(err){
