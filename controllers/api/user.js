@@ -1176,7 +1176,7 @@ const verifyemailaccount = async (req,res) =>{
                         if(err){
                             console.log(err)
                         }else{
-                            var link = "http://ktgamez.herokuapp.com/verifyemail/"+token
+                            var link = "https://ktgamez.herokuapp.com/verifyemail/"+token
                             console.log(link)
                             ejs.renderFile("views/welcome.ejs", { link: link }, function (err, data) {
                                 if (err) {
