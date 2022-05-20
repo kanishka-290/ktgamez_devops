@@ -6,13 +6,11 @@ const md5 = require("md5");
 const moment = require("moment");
 const jwt = require("jsonwebtoken");
 const nodemailer = require('nodemailer');
-const res = require('express/lib/response');
 const { OAuth2Client } = require("google-auth-library");
 const fetch = require("node-fetch");
 const ejs = require("ejs");
-const client = new OAuth2Client("965950927501-simcqlf1ojuhoc4r3nmr5fgi1kdhrg0c.apps.googleusercontent.com");
+const client = new OAuth2Client("673564490678-m23s1771i1f75b0nsn9j7qifdbfaob20.apps.googleusercontent.com");
 const axios = require('axios');
-const fast2sms = require('fast-two-sms');
 var cron = require('node-cron');
 
 //Nodemailer
@@ -986,11 +984,12 @@ const resetpassword2 = async (req,res) =>{
 const googlelogin = async (req,res) =>{
 
     try{
-    //console.log(req.body)
+    
     const connection = await sqlConnect();
-    const tokenId = req.body.tokenId;
-
-    client.verifyIdToken({idToken:tokenId,audience:"673564490678-m23s1771i1f75b0nsn9j7qifdbfaob20.apps.googleusercontent.com"}).then(async response =>{
+    const idToken = req.body.token;
+    
+    client.verifyIdToken({idToken,audience:"673564490678-m23s1771i1f75b0nsn9j7qifdbfaob20.apps.googleusercontent.com"})
+    .then(async response =>{
         const {email_verified,email,name,picture} = response.payload;
         //console.log(response.payload)
         var [findUser,findDetail] = await connection.query("SELECT `id` FROM `users` WHERE `email`='"+email+"'");
@@ -1028,9 +1027,12 @@ const googlelogin = async (req,res) =>{
         }
         
     })
+    .catch(err =>{
+        res.send({"message":"idToken missmatch"})
+    })
     connection.end();
     }catch(err){
-        
+        res.send({"error":"something went wrong"})
     }
 };
 const facebooklogin = async (req,res) =>{
