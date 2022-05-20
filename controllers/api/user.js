@@ -1032,7 +1032,7 @@ const googlelogin = async (req,res) =>{
         
     })
     .catch(err =>{
-        res.send({"message":"Invalid client ID"})
+        res.send({"message":err})
     })
     connection.end();
     }
