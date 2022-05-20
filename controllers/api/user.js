@@ -9,7 +9,7 @@ const nodemailer = require('nodemailer');
 const { OAuth2Client } = require("google-auth-library");
 const fetch = require("node-fetch");
 const ejs = require("ejs");
-const client = new OAuth2Client("673564490678-m23s1771i1f75b0nsn9j7qifdbfaob20.apps.googleusercontent.com");
+const client = new OAuth2Client(process.env.GOOGLE_AUTH_CLIENTID);
 const axios = require('axios');
 var cron = require('node-cron');
 
@@ -985,23 +985,25 @@ const googlelogin = async (req,res) =>{
 
     try{
     
-    const connection = await sqlConnect();
+    
     const idToken = req.body.idToken;
     
     if(idToken == '' || idToken == null || idToken == undefined){
         res.send({"errors":"idToken not found"})
     }else{
-    client.verifyIdToken({idToken,audience:"673564490678-m23s1771i1f75b0nsn9j7qifdbfaob20.apps.googleusercontent.com"})
+    client.verifyIdToken({idToken,audience:process.env.GOOGLE_AUTH_CLIENTID})
     .then(async response =>{
+        const connection = await sqlConnect();
         console.log(response)
         const {email_verified,email,name,picture} = response.payload;
-        //console.log(response.payload)
+        
         var [findUser,findDetail] = await connection.query("SELECT `id` FROM `users` WHERE `email`='"+email+"'");
 
         if(findUser.length>0){
 
             var loginTIme = moment().format("YYYY MM DD hh:mm:ss");
             jwt.sign({loginTIme,findUser},'secretkey',{ expiresIn: '48h'},(err,token)=>{
+                console.log("Exist ",token)
             res.send({token})
          })
         }else{
@@ -1012,7 +1014,7 @@ const googlelogin = async (req,res) =>{
             var [signup,signupfield] = await connection.query("SELECT `value` FROM `user_settings` WHERE `key`='Signup Bonus'")
             
             //Add data to users table
-            var [register,rfield] = await connection.query("INSERT INTO `users` SET `email`='"+email+"',`name`='"+name+"',`tokens`='"+signup[0]['value']+"',`avatar`='"+picture+"',`email_verified_at`='"+moment().format("YYYY-MM-DD hh:mm:ss")+"',`referral_code`='"+referral_code+"',`created_at`='"+moment().format("YYYY-MM-DD hh:mm:ss")+"',`updated_at`='"+moment().format("YYYY-MM-DD hh:mm:ss")+"'")
+            var [register,rfield] = await connection.query("INSERT INTO `users` SET `email`='"+email+"',`name`='"+name+"',`tokens`='"+signup[0]['value']+"',`points`=0,`avatar`='"+picture+"',`email_verified_at`='"+moment().format("YYYY-MM-DD hh:mm:ss")+"',`referral_code`='"+referral_code+"',`is_referred`='NO',`password`='null',`created_at`='"+moment().format("YYYY-MM-DD hh:mm:ss")+"',`updated_at`='"+moment().format("YYYY-MM-DD hh:mm:ss")+"'")
             
             //fetch the inserted id
             var userId = register.insertId;
@@ -1025,18 +1027,26 @@ const googlelogin = async (req,res) =>{
 
             var loginTIme = moment().format("YYYY MM DD hh:mm:ss");
             jwt.sign({loginTIme,result},'secretkey',{ expiresIn: '48h'},(err,token)=>{
+                
+                console.log("New ",token)
              res.send({token})
          })
             
         }
+        connection.end();
         
     })
     .catch(err =>{
+        
+
         res.send({"message":err})
     })
-    connection.end();
+    
     }
+    
     }catch(err){
+        
+
         res.send({"error":"something went wrong"})
     }
 };
