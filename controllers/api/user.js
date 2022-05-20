@@ -987,7 +987,10 @@ const googlelogin = async (req,res) =>{
     
     const connection = await sqlConnect();
     const idToken = req.body.idToken;
-    //console.log(idToken)
+    
+    if(idToken == '' || idToken == null || idToken == undefined){
+        res.send({"errors":"idToken not found"})
+    }else{
     client.verifyIdToken({idToken,audience:"673564490678-m23s1771i1f75b0nsn9j7qifdbfaob20.apps.googleusercontent.com"})
     .then(async response =>{
         console.log(response)
@@ -1032,6 +1035,7 @@ const googlelogin = async (req,res) =>{
         res.send({"message":"Invalid client ID"})
     })
     connection.end();
+    }
     }catch(err){
         res.send({"error":"something went wrong"})
     }
