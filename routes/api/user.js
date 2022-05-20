@@ -44,7 +44,7 @@ module.exports = function(app){
 
     app.get("/api/ktpointhistory", verifyToken ,api.ktpointshistory);
         
-    app.get("/api/login/google" ,api.googlelogin);
+    app.post("/api/login/google" ,api.googlelogin);
 
     app.post("/api/login/facebook" ,api.facebooklogin);
 
