@@ -986,10 +986,11 @@ const googlelogin = async (req,res) =>{
     try{
     
     const connection = await sqlConnect();
-    const idToken = req.body.token;
-    
+    const idToken = req.body.idToken;
+    //console.log(idToken)
     client.verifyIdToken({idToken,audience:"673564490678-m23s1771i1f75b0nsn9j7qifdbfaob20.apps.googleusercontent.com"})
     .then(async response =>{
+        console.log(response)
         const {email_verified,email,name,picture} = response.payload;
         //console.log(response.payload)
         var [findUser,findDetail] = await connection.query("SELECT `id` FROM `users` WHERE `email`='"+email+"'");
@@ -1028,7 +1029,7 @@ const googlelogin = async (req,res) =>{
         
     })
     .catch(err =>{
-        res.send({"message":"idToken missmatch"})
+        res.send({"message":"Invalid client ID"})
     })
     connection.end();
     }catch(err){
