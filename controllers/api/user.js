@@ -990,7 +990,7 @@ const googlelogin = async (req,res) =>{
     const connection = await sqlConnect();
     const tokenId = req.body.tokenId;
 
-    client.verifyIdToken({idToken:tokenId,audience:"965950927501-simcqlf1ojuhoc4r3nmr5fgi1kdhrg0c.apps.googleusercontent.com"}).then(async response =>{
+    client.verifyIdToken({idToken:tokenId,audience:"673564490678-m23s1771i1f75b0nsn9j7qifdbfaob20.apps.googleusercontent.com"}).then(async response =>{
         const {email_verified,email,name,picture} = response.payload;
         //console.log(response.payload)
         var [findUser,findDetail] = await connection.query("SELECT `id` FROM `users` WHERE `email`='"+email+"'");
