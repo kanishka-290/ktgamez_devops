@@ -418,7 +418,8 @@ const userdetails = async (req,res) =>{
         if(err){
             res.send({"message":"Unauthenticated"})
         }else{
-            try{
+           // try{
+               console.log(data)
                 var userId = data.result[0].id;
                 
                 const connection = await sqlConnect();
@@ -438,11 +439,11 @@ const userdetails = async (req,res) =>{
                     "updated_at":user[0].updated_at
                 })
                 connection.end();
-            }catch(err){
-                    res.send({
-                        "message": "Something went wrong."
-                    })
-            }
+            // }catch(err){
+            //         res.send({
+            //             "message": "Something went wrong."
+            //         })
+            // }
         }
     })
     
@@ -967,12 +968,12 @@ const googlelogin = async (req,res) =>{
         console.log(response)
         const {email_verified,email,name,picture} = response.payload;
         
-        var [findUser,findDetail] = await connection.query("SELECT `id` FROM `users` WHERE `email`='"+email+"'");
+        var [result,findDetail] = await connection.query("SELECT `id` FROM `users` WHERE `email`='"+email+"'");
 
-        if(findUser.length>0){
+        if(result.length>0){
 
             var loginTIme = moment().format("YYYY MM DD hh:mm:ss");
-            jwt.sign({loginTIme,findUser},'secretkey',{ expiresIn: '48h'},(err,token)=>{
+            jwt.sign({loginTIme,result},'secretkey',{ expiresIn: '48h'},(err,token)=>{
                 console.log("Exist ",token)
             res.send({token})
          })
