@@ -14,28 +14,7 @@ const axios = require('axios');
 var cron = require('node-cron');
 const {app} = require("../../app")
 
-const passport = require("passport");
-const {Strategy} = require("passport-facebook")
 
-passport.serializeUser(function(user,cb){
-  cb(null,user)
-})
-passport.deserializeUser(function(obj,cb){
-  cb(null,obj)
-})
-passport.use(new Strategy({
-  clientID: "745529183132581",
-  clientSecret: "5e8676a9fb676a6d01167a6cd5f58247",
-  callbackURL: "https://ktgamez.herokuapp.com/api/login/facebook",
-  profileFields: ['id','displayName']
-},
-function(accesstoken,refreshToken, profile,done){
-  console.log(accesstoken,refreshToken,profile)
-  const user = {}
-  cb(null,user)
-}
-
-))
 
 //Nodemailer
 var transporter = nodemailer.createTransport({
@@ -1051,7 +1030,7 @@ const facebooklogin = async (req,res) =>{
     })
     .then(res => res.json())
     .then(async json => {
-        try{
+        //try{
             console.log(json)
             const connection = await sqlConnect();
 
@@ -1093,10 +1072,10 @@ const facebooklogin = async (req,res) =>{
         }
 
             connection.end();
-        }catch(err){
-            console.log(err)
-            res.send({"errors":"Something went wrong"})
-        }
+        // }catch(err){
+        //     console.log(err)
+        //     res.send({"errors":"Something went wrong"})
+        // }
     })
 };
 // const facebooklogin = async (req,res) =>{

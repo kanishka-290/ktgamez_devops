@@ -48,6 +48,9 @@ module.exports = function(app){
 
     app.get("/api/login/facebook" ,api.facebooklogin);
 
+    app.post("/api/login/facebook" ,api.facebooklogin);
+
+
     app.post("/api/forgotpassword" ,api.forgotpassword);
 
     app.get("/verifypassword/:token",verifyToken2, api.resetpassword);
