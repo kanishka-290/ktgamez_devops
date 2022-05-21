@@ -1053,7 +1053,7 @@ const googlelogin = async (req,res) =>{
 const facebooklogin = async (req,res) =>{
 
     const {userID,accesstoken} = req.body;
-
+    console.log(req.body)
     let urlGraphFacebook = `https://graph.facebook.com/v2.11/${userID}/?fields=id,name,email,picture&access_token=${accesstoken}`;
     fetch(urlGraphFacebook,{
         method:"GET"
@@ -1061,6 +1061,7 @@ const facebooklogin = async (req,res) =>{
     .then(res => res.json())
     .then(async json => {
         try{
+            console.log(json)
             const connection = await sqlConnect();
 
             var {id,name,email,picture} = json;
@@ -1102,6 +1103,7 @@ const facebooklogin = async (req,res) =>{
 
             connection.end();
         }catch(err){
+            console.log(err)
             res.send({"errors":"Something went wrong"})
         }
     })
