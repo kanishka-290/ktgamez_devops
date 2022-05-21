@@ -12,6 +12,30 @@ const ejs = require("ejs");
 const client = new OAuth2Client(process.env.GOOGLE_AUTH_CLIENTID);
 const axios = require('axios');
 var cron = require('node-cron');
+const {app} = require("../../app")
+
+const passport = require("passport");
+const {Strategy} = require("passport-facebook")
+
+passport.serializeUser(function(user,cb){
+  cb(null,user)
+})
+passport.deserializeUser(function(obj,cb){
+  cb(null,obj)
+})
+passport.use(new Strategy({
+  clientID: "745529183132581",
+  clientSecret: "5e8676a9fb676a6d01167a6cd5f58247",
+  callbackURL: "https://ktgamez.herokuapp.com/api/login/facebook",
+  profileFields: ['id','displayName']
+},
+function(accesstoken,refreshToken, profile,done){
+  console.log(accesstoken,refreshToken,profile)
+  const user = {}
+  cb(null,user)
+}
+
+))
 
 //Nodemailer
 var transporter = nodemailer.createTransport({
@@ -76,24 +100,9 @@ cron.schedule("0 0 */6 * * *",async function() {
 
 
 // create the connection to database
-// function sqlConnect(){
-//     const conn = mysql2.createConnection({
-//         host: process.env.HOST,
-//         user: process.env.USERNAME,
-//         password:process.env.PASSWORD,
-//         database: process.env.DB_NAME,
-//         port:process.env.PORT
-//     });
-//     if(conn){
-//         //console.log("Connected to database")
-//     return conn;
-//     }else{
-//         console.log("Database connection failed.")
-//     }
-// }
-//console.log(process.env.HOST,process.env.USER_NAME,process.env.DB_PASSWORD,process.env.DB_NAME,process.env.DB_PORT)
-function sqlConnect(){
-    const conn = mysql2.createConnection({
+
+const sqlConnect = async ()=>{
+    const conn = await mysql2.createConnection({
         host: process.env.HOST,
         user: process.env.USER_NAME,
         password:process.env.DB_PASSWORD,
@@ -101,7 +110,7 @@ function sqlConnect(){
         port:process.env.DB_PORT
     });
     if(conn){
-        //console.log("Connected to database")
+        console.log("Connected to database")
     return conn;
     }else{
         console.log("Database connection failed.")
@@ -132,24 +141,6 @@ function generateOTP() {
 
         return result;
 }
-
-//send email
-function send_mail(from,to,subject,text) {
-    var mailOptions = {
-      from: from,
-      to: to,
-      subject: subject,
-      text: text
-    };
-    transporter.sendMail(mailOptions, function(error, info){
-     if (error) {
-       console.log(error);
-     } else {
-       console.log('Email sent: ' + info.response);
-     }
-    });
-}
-
 //Call API
 const  axios_api = async (number, message, transactionId, clientCorrelator) =>{
     var data = JSON.stringify({
@@ -1108,6 +1099,13 @@ const facebooklogin = async (req,res) =>{
         }
     })
 };
+// const facebooklogin = async (req,res) =>{
+//     passport.authenticate('facebook',{failureRedirect:'/api/login'}),function(req,res){
+//         console.log(req.user,req.isAuthinticated())
+//         res.send("user")
+//     }
+    
+// }
 
 
 const kttokenhistory = async (req,res) =>{
@@ -1131,8 +1129,6 @@ const kttokenhistory = async (req,res) =>{
         }
     })
 };
-
-
 const games = async (req,res) =>{
     try{
         const connection = await sqlConnect();

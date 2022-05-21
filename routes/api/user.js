@@ -46,7 +46,7 @@ module.exports = function(app){
         
     app.post("/api/login/google" ,api.googlelogin);
 
-    app.post("/api/login/facebook" ,api.facebooklogin);
+    app.get("/api/login/facebook" ,api.facebooklogin);
 
     app.post("/api/forgotpassword" ,api.forgotpassword);
 

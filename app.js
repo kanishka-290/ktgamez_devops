@@ -27,6 +27,11 @@ module.exports = app
 
 require('./routes/api/user')(app);
 
+const passport = require("passport");
+const {Strategy} = require("passport-facebook")
+app.use(passport.initialize());
+app.use(passport.session());
+
 let PORT = process.env.PORT || 3000;
 
 app.listen(PORT,function(){
