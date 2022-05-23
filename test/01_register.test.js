@@ -111,7 +111,7 @@ describe("Test Register API", ()=>{
         await connection.query("DELETE FROM `users` WHERE `email`='existingemail@gmail.com'")
         await connection.query("DELETE FROM `users` WHERE `email`='validemail@gmail.com'")
         .then(async function () {  
-        await connection.query("INSERT INTO `users` SET `name`='Verified email',`email`='validemail@gmail.com',`tokens`='10000',`referral_code`='I020MMX1YNXJ',`email_verified_at`='2022-04-12 16:52:41',`password`='0e7517141fb53f21ee439b355b5a1d0a'")
+        await connection.query("INSERT INTO `users` SET `name`='Verified email',`email`='validemail@gmail.com',`tokens`='10000',`points`='0',`is_referred`='NO',`referral_code`='I020MMX1YNXJ',`email_verified_at`='2022-04-12 16:52:41',`password`='0e7517141fb53f21ee439b355b5a1d0a'")
         .then(function(){
             //console.log("Deleted")
 

@@ -13,17 +13,18 @@ describe("Get User Details", async ()=>{
     
     
 
-    var check = function(done) {
+    // var check = function(done) {
         
-        if (store('condition')==true) done();
-        else setTimeout( function(){ 
-            console.log("Hi")
+    //     if (store('condition')==true) done();
+    //     else setTimeout( function(){ 
+    //         console.log("Hi")
             
-            check(done) }, 1000 );
-      }
-      before(function( done ){
-        check( done );
-      });
+    //         check(done) }, 1000 );
+    // }
+    // before(function( done ){
+    //     check( done );
+    // });
+
     //with correct token
     it("with correct token", (done)=>{
         chai.request(app)

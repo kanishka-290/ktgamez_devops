@@ -923,15 +923,21 @@ const facebooklogin = async (req,res) =>{
     })
     .then(res => res.json())
     .then(async json => {
-        //try{
+        try{
             console.log(json)
             const connection = await sqlConnect();
 
             //var {id,name,email,picture} = json;
-            var name = json.name || json.id;
+            var name = json.name || "";
             var email = json.email || "";
             var picture = json.picture.data.url
             console.log(json.picture.data.url)
+            error = [];
+            if(email==null || email == undefined || email == ""){
+                error["email"]=["The email field is required."];
+                res.send({"message":"The given data was invalid","errors":error})
+            }else{
+
         var [result,findDetail] = await connection.query("SELECT `id` FROM `users` WHERE `email`='"+email+"'");
 
         if(result.length>0){
@@ -965,12 +971,13 @@ const facebooklogin = async (req,res) =>{
          })
             
         }
+        }
 
             connection.end();
-        // }catch(err){
-        //     console.log(err)
-        //     res.send({"errors":"Something went wrong"})
-        // }
+        }catch(err){
+            console.log(err)
+            res.send({"errors":"Something went wrong"})
+        }
     })
 };
 
