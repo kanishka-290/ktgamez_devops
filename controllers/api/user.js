@@ -931,7 +931,7 @@ const facebooklogin = async (req,res) =>{
             var name = json.name || json.id;
             var email = json.email || "";
             var picture = json.picture.data.url
-        //console.log(picture.data.url)
+            console.log(json.picture.data.url)
         var [result,findDetail] = await connection.query("SELECT `id` FROM `users` WHERE `email`='"+email+"'");
 
         if(result.length>0){
@@ -948,13 +948,13 @@ const facebooklogin = async (req,res) =>{
             var [signup,signupfield] = await connection.query("SELECT `value` FROM `user_settings` WHERE `key`='Signup Bonus'")
             
             //Add data to users table
-            var [register,rfield] = await connection.query("INSERT INTO `users` SET `email`='"+email+"',`name`='"+name+"',`tokens`='"+signup[0]['value']+"',`points`='0',`avatar`='"+picture.data.url+"',`email_verified_at`='"+moment().format("YYYY-MM-DD hh:mm:ss")+"',`referral_code`='"+referral_code+"',`created_at`='"+moment().format("YYYY-MM-DD hh:mm:ss")+"',`updated_at`='"+moment().format("YYYY-MM-DD hh:mm:ss")+"'")
+            var [register,rfield] = await connection.query("INSERT INTO `users` SET `email`='"+email+"',`name`='"+name+"',`tokens`='"+signup[0]['value']+"',`points`='0',`avatar`='"+picture+"',`email_verified_at`='"+moment().format("YYYY-MM-DD hh:mm:ss")+"',`referral_code`='"+referral_code+"',`created_at`='"+moment().format("YYYY-MM-DD hh:mm:ss")+"',`updated_at`='"+moment().format("YYYY-MM-DD hh:mm:ss")+"'")
             
             //fetch the inserted id
             var userId = register.insertId;
             
             //Add data to social Identities
-            var [social_identities,social_fields] = await connection.query("INSERT INTO `social_identities` SET `user_id`='"+userId+"',`provider_name`='Facebook',`avatar`='"+picture.data.url+"',`created_at`='"+moment().format("YYYY-MM-DD hh:mm:ss")+"',`updated_at`='"+moment().format("YYYY-MM-DD hh:mm:ss")+"'")
+            var [social_identities,social_fields] = await connection.query("INSERT INTO `social_identities` SET `user_id`='"+userId+"',`provider_name`='Facebook',`avatar`='"+picture+"',`created_at`='"+moment().format("YYYY-MM-DD hh:mm:ss")+"',`updated_at`='"+moment().format("YYYY-MM-DD hh:mm:ss")+"'")
             
             //Get user detail
             var [result,field] = await connection.query("SELECT `id` FROM `users` WHERE `email`='"+email+"'")
