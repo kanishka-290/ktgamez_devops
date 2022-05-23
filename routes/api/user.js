@@ -2,6 +2,7 @@ const api = require("../../controllers/api/user");
 const { verifyToken,verifyToken2 } = require("../../utils/verifyToken");
 
 module.exports = function(app){
+    
     app.post("/api/register",api.register);
 
     app.post("/api/login",api.login);
@@ -36,8 +37,6 @@ module.exports = function(app){
 
     app.post("/api/compete/:id",verifyToken, api.start2);
 
-
-
     app.post("/api/email/verification-notification",verifyToken,api.verifyemailaccount);
 
     app.get("/api/tokens", verifyToken ,api.kttokenhistory);
@@ -50,7 +49,6 @@ module.exports = function(app){
 
     app.post("/api/login/facebook" ,api.facebooklogin);
 
-
     app.post("/api/forgotpassword" ,api.forgotpassword);
 
     app.get("/verifypassword/:token",verifyToken2, api.resetpassword);
@@ -61,14 +59,5 @@ module.exports = function(app){
 
     app.get("/api/verify-email/:id",verifyToken, api.verify_email);
     
-
-    app.post("/api/verifyotp",verifyToken, api.verifyotp);
-
-    app.post("/api/requestsubscription",verifyToken, api.requestsubscription);
-
-   
-    app.post("/api/otpsend", api.loginwithotp);
-
-
     //other routes..
 }

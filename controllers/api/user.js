@@ -39,47 +39,9 @@ schema
 .has().not().spaces()                           // Should not have spaces
 .is().not().oneOf(['Passw0rd', 'Password123']); // Blacklist these values
 
-//cron job
-
-cron.schedule("0 0 */6 * * *",async function() {
-    console.log("running a task every 10 second");
-    try{
-        const connection = await sqlConnect();
-
-        const response = await fetch('https://mtn.girofintech.com/storage/DataSync.json');
-        const data = await response.json();
-        console.log(data.length)
-
-        var [subreq,subfield] = await connection.query("SELECT * FROM `subscription_requests` WHERE `created_at` LIKE '%"+moment().format("YYYY-MM-DD")+"%'")
-        console.log(subreq.length)
-        
-        if(subreq.length>0){
-            for(i=0;i<subreq.length;i++){
-
-                var [user,field] = await connection.query("SELECT `id`,`phone` FROM `users` WHERE `id`='"+subreq[i]['user_id']+"'")
-
-                for(j=0;j<data.length;j++){
-                    if((data[j]['sequenceNo'] == subreq[i]['subscription_id']) && data[j]['callingParty'] == user[0]['phone']){
-                        var [update,ufield] = await connection.query("UPDATE `users` SET `is_subscribed`=1 WHERE `id`='"+subreq[i]['user_id']+"'")
-                        console.log(subreq[i]['user_id']+"Updated");
-                    }else{
-                        console.log("Not Updated");
-                    }
-                }
-            }
-        }
-        
-        connection.end();
-    }catch(err){
-        console.log(err);
-    }
-
-  });
-
 
 
 // create the connection to database
-
 const sqlConnect = async ()=>{
     const conn = await mysql2.createConnection({
         host: process.env.HOST,
@@ -89,12 +51,13 @@ const sqlConnect = async ()=>{
         port:process.env.DB_PORT
     });
     if(conn){
-        console.log("Connected to database")
+        //console.log("Connected to database")
     return conn;
     }else{
         console.log("Database connection failed.")
     }
 }
+
 // Generate Refer code
 function generateString() {
     const characters ='ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
@@ -108,84 +71,6 @@ function generateString() {
         return result;
 }
 
-// Generate OTP
-function generateOTP() {
-    const characters ='0123456789';
-
-        let result = '';
-        const charactersLength = characters.length;
-        for ( let i = 0; i < 6; i++ ) {
-            result += characters.charAt(Math.floor(Math.random() * charactersLength));
-        }
-
-        return result;
-}
-//Call API
-const  axios_api = async (number, message, transactionId, clientCorrelator) =>{
-    var data = JSON.stringify({
-  "clientCorrelator": clientCorrelator || "RANDOMID123",
-  "message": message,
-  "receiverAddress": [
-    "234"+number
-  ],
-  "senderAddress": "20092"
-});
-
-var config = {
-  method: 'post',
-  url: 'http://79.175.163.215:7091/v2/messages/sms/outbound',
-  headers: { 
-    'transactionId': transactionId || '2349000000100130', 
-    'API-TOKEN': process.env.MTN_API_TOKEN, 
-    'Content-Type': 'application/json'
-  },
-  data : data
-};
-
-await axios(config)
-.then(function (response) {
-  console.log(JSON.stringify(response.data));
-  return JSON.stringify(response.data);
-})
-.catch(function (error) {
-  console.log(error);
-  return error;
-
-});
-};
-
-//Subscribe on demand
-const subscribe_on_demand = async (number,transactionId) =>{
-    var data = JSON.stringify({
-        "subscriptionProviderId": "CSM",
-        "subscriptionId": "6369",
-        "nodeId": "ICELL",
-        "subscriptionDescription": "P_ICELL_I_Cel_15554",
-        "registrationChannel": "API"
-      });
-      
-      var config = {
-        method: 'post',
-        url: 'http://79.175.163.215:7091/v2/customers/'+number+'/subscriptions/',
-        headers: { 
-          'transactionId': transactionId ||'2349000000100123', 
-          'API-TOKEN': process.env.MTN_API_TOKEN, 
-          'Content-Type': 'application/json'
-        },
-        data : data
-      };
-      
-      await axios(config)
-      .then(function (response) {
-        console.log(JSON.stringify(response.data));
-        return(JSON.stringify(response.data))
-      })
-      .catch(function (error) {
-        console.log(error);
-        return (error)
-      });
-      
-}
 
 const register = async (req,res) =>{
     try{
@@ -273,16 +158,6 @@ const register = async (req,res) =>{
                 var referal = 0;
                 var userId = result.insertId;
 
-                // var axios_data = [];
-                // if(phone != '' && phone != null || phone != undefined){
-                //     var otp = generateOTP();
-                //     var message = "Welcome to ktgamez, Your OTP is "+otp+". Do not share this otp with anyone."
-                //     var transactionId = "2349000000100"+Math.floor((Math.random() * 100000000) + 1);
-                //     var clientCorrelator = "RANDOM"+Math.floor((Math.random() * 100000000) + 1);
-                //     var [updateuser,ufield] = await connection.query("UPDATE `users` SET `phone`='234"+phone+"',`verification_code`='"+otp+"' WHERE `id`='"+userId+"'");
-                //     axios_data = await axios_api(phone,message,transactionId,clientCorrelator);
-                // }
-
                 if(referral_code != '' && referral_code != null && referral_code != undefined){
                     var [check,cfield] = await connection.query("SELECT `id` FROM `users` WHERE `referral_code`='"+referral_code+"'")
                     if(check.length>0){
@@ -354,6 +229,7 @@ const register = async (req,res) =>{
         res.send({ "errors": "Something went wrong."})
     }
 };
+
 const login = async (req,res) =>{
     try{
         
@@ -413,13 +289,14 @@ const login = async (req,res) =>{
         res.send({ "error": "Something went wrong."})
     }
 };
+
 const userdetails = async (req,res) =>{
     jwt.verify(req.token,"secretkey",async (err,data)=>{
         if(err){
             res.send({"message":"Unauthenticated"})
         }else{
-           // try{
-               console.log(data)
+            try{
+               
                 var userId = data.result[0].id;
                 
                 const connection = await sqlConnect();
@@ -439,15 +316,16 @@ const userdetails = async (req,res) =>{
                     "updated_at":user[0].updated_at
                 })
                 connection.end();
-            // }catch(err){
-            //         res.send({
-            //             "message": "Something went wrong."
-            //         })
-            // }
+            }catch(err){
+                    res.send({
+                        "message": "Something went wrong."
+                    })
+            }
         }
     })
     
 };
+
 const leaderboard = async (req,res) =>{
     
     try{
@@ -462,6 +340,7 @@ const leaderboard = async (req,res) =>{
 
 
 };
+
 const genre = async (req,res) =>{
     try{
         const connection = await sqlConnect();
@@ -491,6 +370,7 @@ const genre = async (req,res) =>{
         res.send({"message":"Something went wrong"})
     }
 };
+
 const points = async (req,res) =>{
     jwt.verify(req.token,"secretkey",async (err,data)=>{
         if(err){
@@ -514,6 +394,7 @@ const points = async (req,res) =>{
         }
     });
 };
+
 const play = async (req,res) =>{
     jwt.verify(req.token,"secretkey", async (err,data)=>{
         if(err){
@@ -553,7 +434,8 @@ const play = async (req,res) =>{
             
         }
     })
-}
+};
+
 const playandwin = async (req,res) =>{
     jwt.verify(req.token,"secretkey", async (err,data)=>{
         if(err){
@@ -580,6 +462,7 @@ const playandwin = async (req,res) =>{
         }
     })
 };
+
 const genregames = async (req,res) =>{
     try{
         const connection = await sqlConnect();
@@ -592,6 +475,7 @@ const genregames = async (req,res) =>{
         })
     }
 };
+
 const gamesusinggenreid = async(req,res) =>{
     try{
         var ganre_id = req.params.id || "";
@@ -605,6 +489,7 @@ const gamesusinggenreid = async(req,res) =>{
         })
     }
 };
+
 const referralCode = async (req,res) =>{
     jwt.verify(req.token,"secretkey",async (err,data)=>{
         if(err){
@@ -663,6 +548,7 @@ const referralCode = async (req,res) =>{
         }
     })
 };
+
 const submitgamescore = async (req,res) =>{
     jwt.verify(req.token,"secretkey", async (err,data)=>{
         if(err){
@@ -727,6 +613,7 @@ const submitgamescore = async (req,res) =>{
         }
     })
 };
+
 const searchgame = async (req,res) =>{
     try{
         
@@ -740,6 +627,7 @@ const searchgame = async (req,res) =>{
         res.send({"message":"Something went wrong"})
     }
 };
+
 const compete = async (req,res) =>{
     jwt.verify(req.token,"secretkey", async (err,data)=>{
         if(err){
@@ -780,6 +668,7 @@ const compete = async (req,res) =>{
         }
     })
 };
+
 const start = async (req,res) =>{
     jwt.verify(req.token,"secretkey", async (err,data)=>{
         if(err){
@@ -832,6 +721,7 @@ const start = async (req,res) =>{
         }
     })
 };
+
 const start2 = async (req,res) =>{
     jwt.verify(req.token,"secretkey", async (err,data)=>{
         if(err){
@@ -865,6 +755,7 @@ const start2 = async (req,res) =>{
         }
     })
 };
+
 const forgotpassword = async (req,res) =>{
     try{
 
@@ -922,6 +813,7 @@ const forgotpassword = async (req,res) =>{
         res.send({"message":"Something went wrong"})
     }
 };
+
 const resetpassword = async (req,res) =>{
         
     jwt.verify(req.token,process.env.SECRET_KEY, async (err,data)=>{
@@ -933,6 +825,7 @@ const resetpassword = async (req,res) =>{
             }
         })
 };
+
 const resetpassword2 = async (req,res) =>{
     
     console.log(req.body);
@@ -949,8 +842,6 @@ const resetpassword2 = async (req,res) =>{
     })
     
 };
-
-
 
 const googlelogin = async (req,res) =>{
 
@@ -1021,6 +912,7 @@ const googlelogin = async (req,res) =>{
         res.send({"error":"something went wrong"})
     }
 };
+
 const facebooklogin = async (req,res) =>{
 
     const {userID,accesstoken} = req.body;
@@ -1035,15 +927,17 @@ const facebooklogin = async (req,res) =>{
             console.log(json)
             const connection = await sqlConnect();
 
-            var {id,name,email,picture} = json;
+            //var {id,name,email,picture} = json;
+            var name = json.name || json.id;
+            var email = json.email || "";
             var picture = picture.data.url
         //console.log(picture.data.url)
-        var [findUser,findDetail] = await connection.query("SELECT `id` FROM `users` WHERE `email`='"+email+"'");
+        var [result,findDetail] = await connection.query("SELECT `id` FROM `users` WHERE `email`='"+email+"'");
 
-        if(findUser.length>0){
+        if(result.length>0){
 
             var loginTIme = moment().format("YYYY MM DD hh:mm:ss");
-            jwt.sign({loginTIme,findUser},'secretkey',{ expiresIn: '48h'},(err,token)=>{
+            jwt.sign({loginTIme,result},'secretkey',{ expiresIn: '48h'},(err,token)=>{
             res.send({token})
          })
         }else{
@@ -1054,13 +948,13 @@ const facebooklogin = async (req,res) =>{
             var [signup,signupfield] = await connection.query("SELECT `value` FROM `user_settings` WHERE `key`='Signup Bonus'")
             
             //Add data to users table
-            var [register,rfield] = await connection.query("INSERT INTO `users` SET `email`='"+email+"',`name`='"+name+"',`tokens`='"+signup[0]['value']+"',`avatar`='avatar',`email_verified_at`='"+moment().format("YYYY-MM-DD hh:mm:ss")+"',`referral_code`='"+referral_code+"',`created_at`='"+moment().format("YYYY-MM-DD hh:mm:ss")+"',`updated_at`='"+moment().format("YYYY-MM-DD hh:mm:ss")+"'")
+            var [register,rfield] = await connection.query("INSERT INTO `users` SET `email`='"+email+"',`name`='"+name+"',`tokens`='"+signup[0]['value']+"',`points`='0',`avatar`='"+picture.data.url+"',`email_verified_at`='"+moment().format("YYYY-MM-DD hh:mm:ss")+"',`referral_code`='"+referral_code+"',`created_at`='"+moment().format("YYYY-MM-DD hh:mm:ss")+"',`updated_at`='"+moment().format("YYYY-MM-DD hh:mm:ss")+"'")
             
             //fetch the inserted id
             var userId = register.insertId;
             
             //Add data to social Identities
-            var [social_identities,social_fields] = await connection.query("INSERT INTO `social_identities` SET `user_id`='"+userId+"',`provider_name`='Facebook',`avatar`='avatar',`created_at`='"+moment().format("YYYY-MM-DD hh:mm:ss")+"',`updated_at`='"+moment().format("YYYY-MM-DD hh:mm:ss")+"'")
+            var [social_identities,social_fields] = await connection.query("INSERT INTO `social_identities` SET `user_id`='"+userId+"',`provider_name`='Facebook',`avatar`='"+picture.data.url+"',`created_at`='"+moment().format("YYYY-MM-DD hh:mm:ss")+"',`updated_at`='"+moment().format("YYYY-MM-DD hh:mm:ss")+"'")
             
             //Get user detail
             var [result,field] = await connection.query("SELECT `id` FROM `users` WHERE `email`='"+email+"'")
@@ -1079,14 +973,6 @@ const facebooklogin = async (req,res) =>{
         // }
     })
 };
-// const facebooklogin = async (req,res) =>{
-//     passport.authenticate('facebook',{failureRedirect:'/api/login'}),function(req,res){
-//         console.log(req.user,req.isAuthinticated())
-//         res.send("user")
-//     }
-    
-// }
-
 
 const kttokenhistory = async (req,res) =>{
     jwt.verify(req.token,"secretkey",async (err,data)=>{
@@ -1109,6 +995,7 @@ const kttokenhistory = async (req,res) =>{
         }
     })
 };
+
 const games = async (req,res) =>{
     try{
         const connection = await sqlConnect();
@@ -1126,6 +1013,7 @@ const games = async (req,res) =>{
         res.send({"message":"Something went wrong"})
     }
 };
+
 const ktpointshistory = async (req,res) =>{
     jwt.verify(req.token,"secretkey",async (err,data)=>{
         if(err){
@@ -1151,6 +1039,7 @@ const ktpointshistory = async (req,res) =>{
         }
     })
 };
+
 const verifyemailaccount = async (req,res) =>{
 
     jwt.verify(req.token,"secretkey",async (err,data)=>{
@@ -1215,6 +1104,7 @@ const verifyemailaccount = async (req,res) =>{
     })
     
 };
+
 const verifyemail = async (req,res) =>{
     jwt.verify(req.token,"secretkey", async (err,data)=>{
         if(err){
@@ -1240,6 +1130,7 @@ const verifyemail = async (req,res) =>{
         }
     })
 };
+
 const verify_email = async (req,res) =>{
     jwt.verify(req.token,"secretkey", async (err,data)=>{
         if(err){
@@ -1264,87 +1155,8 @@ const verify_email = async (req,res) =>{
             
         }
     })
-}
-
-const verifyotp = async (req,res) =>{
-    jwt.verify(req.token,"secretkey", async (err,data)=>{
-        if(err){
-            res.send({"message":"Unauthinticated"})
-        }else{
-            
-            try{
-                console.log(data);
-                var otp = req.body.otp;
-                const connection = await sqlConnect();
-                var [check,cfield] = await connection.query("SELECT `id`,`phone_verified_at` FROM `users` WHERE `id`='"+data.result[0].id+"' AND `verification_code`='"+otp+"'")
-                
-                if(check.length>0){
-                    if(check[0]['phone_verified_at']==null || check[0]['phone_verified_at']==undefined || check[0]['phone_verified_at']==""){
-                    var [update,ufield] = await connection.query("UPDATE `users` SET `phone_verified_at`='"+moment().format("YYYY-MM-DD hh:mm:ss")+"' WHERE `id`='"+data.result[0].id+"'")
-                    res.send({"message":"OTP Verified successfully."});
-                    }else{
-                    res.send({"message":"OTP already verified."});
-
-                    }
-                }else{
-                    res.send({"message":"Invalid OTP"})
-                }
-                
-                connection.end();
-            
-
-            }catch(err){
-                res.send({"message":"Something went wrong"})
-            }
-        }
-    })
 };
-const requestsubscription = async (req,res) =>{
-    jwt.verify(req.token,"secretkey", async (err,data)=>{
-        if(err){
-            res.send({"message":"Unauthinticated"})
-        }else{
-            
-            try{
-                //console.log(data);
-                const connection = await sqlConnect();
-                var [check,cfield] = await connection.query("SELECT `id`,`phone` FROM `users` WHERE `id`='"+data.result[0].id+"'")
-                var transactionId = "2349000000100"+(Math.floor(Math.random()*100000000))+1
-                var userId = data.result[0].id;
-                var phone = check[0]['phone'];
-                var [subreq,subfield] = await connection.query("INSERT INTO `subscription_requests` SET `subscription_id`='"+transactionId+"',`user_id`='"+userId+"',`created_at`='"+moment().format("YYYY-MM-DD hh:mm:ss")+"',`updated_at`='"+moment().format("YYYY-MM-DD hh:mm:ss")+"'")
-                var response = await subscribe_on_demand(phone,transactionId);
-                res.send({"message":"Success",response})
-                
-                connection.end();
-            
 
-            }catch(err){
-                res.send({"message":"Something went wrong"})
-            }
-        }
-    })
-}
-
-
-const loginwithotp = async (req,res) =>{
-    try{
-        var number = req.body.number;
-        if(number == '' || number == null || number == undefined){
-            res.send({"message":"number required"})
-        }else{
-            const connection = sqlConnect();
-            var otp = generateOTP()
-            axios_api();
-            // var options = {authorization : process.env.OTP_API_KEY , message : 'Thanks for registerting with ktgamez. Your OTP is '+ otp,  numbers : [number]} 
-            // await fast2sms.sendMessage(options) //Asynchronous Function.
-            res.send({"message":"OTP Sent"})
-            connection.end();
-        }
-    }catch(Err){
-        res.send(Err)
-    }
-}
 
 module.exports = {
     login,
@@ -1364,25 +1176,14 @@ module.exports = {
     referralCode,
     submitgamescore,
     searchgame,
-
-
-
     verifyemailaccount,
     verify_email,
     kttokenhistory,
     ktpointshistory,
-    
-    
     googlelogin,
     facebooklogin,
-    
     forgotpassword,
     resetpassword,
     resetpassword2,
     verifyemail,
-    verifyotp,
-    requestsubscription,
-   
-
-    loginwithotp,
 }
