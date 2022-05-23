@@ -930,7 +930,7 @@ const facebooklogin = async (req,res) =>{
             //var {id,name,email,picture} = json;
             var name = json.name || json.id;
             var email = json.email || "";
-            var picture = picture.data.url
+            var picture = json.picture.data.url
         //console.log(picture.data.url)
         var [result,findDetail] = await connection.query("SELECT `id` FROM `users` WHERE `email`='"+email+"'");
 
