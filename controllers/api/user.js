@@ -932,7 +932,7 @@ const facebooklogin = async (req,res) =>{
             var email = json.email || "";
             var picture = json.picture.data.url
             console.log(json.picture.data.url)
-            error = [];
+            error = {};
             if(email==null || email == undefined || email == ""){
                 error["email"]=["The email field is required."];
                 res.send({"message":"The given data was invalid","errors":error})
