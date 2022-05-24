@@ -934,7 +934,7 @@ const facebooklogin = async (req,res) =>{
             console.log(json.picture.data.url)
             error = {};
             if(email==null || email == undefined || email == ""){
-                error["email"]=["The email field is required."];
+                error["email"]=["Your account is not linked with email"];
                 res.send({"message":"The given data was invalid","errors":error})
             }else{
 
