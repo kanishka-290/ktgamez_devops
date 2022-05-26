@@ -58,6 +58,9 @@ module.exports = function(app){
     app.get("/verifyemail/:token",verifyToken2, api.verifyemail);
 
     app.get("/api/verify-email/:id",verifyToken, api.verify_email);
+
+    app.get("/privacy-policy",api.privacyPolicy);
+
     
     //other routes..
 }

@@ -1164,6 +1164,10 @@ const verify_email = async (req,res) =>{
     })
 };
 
+const privacyPolicy = async (req,res) =>{
+    res.render("privacy-policy");
+}
+
 
 module.exports = {
     login,
@@ -1193,4 +1197,5 @@ module.exports = {
     resetpassword,
     resetpassword2,
     verifyemail,
+    privacyPolicy
 }
