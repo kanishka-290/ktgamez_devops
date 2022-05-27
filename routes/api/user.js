@@ -29,7 +29,7 @@ module.exports = function(app){
     
     app.post("/api/entry",verifyToken, api.start);
     
-    app.post("/api/compete/:id",verifyToken, api.submitgamescore);
+    app.post("/api/compete/",verifyToken, api.submitgamescore);
     
     app.get("/api/search", api.searchgame);
     
