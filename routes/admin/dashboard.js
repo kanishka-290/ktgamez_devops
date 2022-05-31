@@ -12,6 +12,9 @@ module.exports =function(app) {
    app.get("/superadmin/competecreate", admin.leaderboardgamecreate)
    app.get("/superadmin/compete", admin.gameview)
    app.get("/superadmin/user", admin.users)
+   app.get("/superadmin/settings", admin.settings)
+   app.get("/superadmin/leaderboard", admin.referandwin)
+
 
 
 

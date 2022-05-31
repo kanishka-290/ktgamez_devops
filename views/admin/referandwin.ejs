@@ -1,0 +1,73 @@
+<%- include("header") -%>
+<!-- page content -->
+<div id="content-page" class="content-page">
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col-sm-12">
+                <div class="iq-card">
+                    <div class="iq-card-header d-flex justify-content-between">
+                        <div class="iq-header-title">
+                            <h4 class="card-title">LeaderBoard &amp; Winners (Refer &amp; Win)</h4>
+
+                        </div>
+                    </div>
+                    <div class="iq-card-body">
+                        <div class="row">
+                            <div class="col-lg-12">
+                                                                
+                                <form method="POST" action="https://mitul.ktgamez.com/superadmin/leaderboard/refer">
+                                    <input type="hidden" name="_token" value="WHd7gLJXmzPTqzGnKOq1xT4buVJgnpF6cYeTcZKo">
+
+                                    <div class="row">
+                                        <div class="col-lg-12">
+                                            <div class="row">
+                                                <div class="col-sm-4 form-group">
+                                                    <label>From Date</label>
+                                                    <input type="datetime-local" class="form-control" placeholder="From Date" name="FromDate">
+
+                                                </div>
+                                                <div class="col-sm-4 form-group">
+                                                    <label>To Date</label>
+                                                    <input type="datetime-local" class="form-control" placeholder="To Date" name="ToDate">
+
+                                                </div>
+                                                <div class="col-sm-4 form-group" style="margin-top: 22px;">
+                                                    <div class="iq-card-header d-flex justify-content-between">
+                                                        <div class="iq-card-header-toolbar d-flex align-items-center">
+                                                            <button class="btn btn-primary" type="submit">Search User</button>
+                                                        </div>
+                                                    </div>
+                                                </div>
+
+
+                                            </div>
+                                        </div>
+
+                                    </div>
+
+
+                                    <div class="row">
+                                        <div class="col-sm-12">
+                                                                                        <div class="iq-card">
+                                                <div class="iq-card-header d-flex justify-content-between">
+                                                    <div class="iq-header-title">
+                                                        <h4 class="card-title">Top User List</h4>
+                                                    </div>
+                                                </div>
+
+                                               
+
+                                            </div>
+                                        </div>
+                                    </div>
+                                </form>
+
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<%- include("footer") -%>

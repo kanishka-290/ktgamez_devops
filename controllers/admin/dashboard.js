@@ -26,6 +26,14 @@ const leaderboardgameview = (req,res) =>{
 const users = (req,res) =>{
     res.render("admin/users.ejs")
 }
+
+const settings = (req,res) =>{
+    res.render("admin/settings.ejs")
+}
+
+const referandwin = (req,res) =>{
+    res.render("admin/referandwin.ejs")
+}
 module.exports = {
     dashboard,
     login,
@@ -36,4 +44,6 @@ module.exports = {
     leaderboardgamecreate,
     leaderboardgameview,
     users,
+    settings,
+    referandwin,
 }
