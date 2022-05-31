@@ -4,27 +4,39 @@
     <div class="container-fluid">
        <div class="row">
           <div class="col-sm-12">
+            <% if(typeof alert != 'undefiend'){ %>
+               <% alert.forEach(function(error){ %>
+           <div class="alert alert-warning alert-dismissible fade show" role="alert">
+             
+             <strong><%= error.msg %></strong>
+               <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                   <span aria-hidden="true">&times;</span>
+                 </button>
+             </div>
+             <% }) %>
+             <% } %>
              <div class="iq-card">
                 <div class="iq-card-header d-flex justify-content-between">
                    <div class="iq-header-title">
                       <h4 class="card-title">Add Game Genre</h4>
                    </div>
                 </div>
+                
                 <div class="iq-card-body">
                    <div class="row">
                       <div class="col-lg-12">
-                         <form action="category-list.html">
+                         <form action="genrecreate" method="POST">
                             <div class="form-group">
-                               <input type="text" class="form-control" placeholder="Genre Name">
+                               <input type="text" class="form-control" placeholder="Genre Name" name="genre_name">
                             </div>
                             <div class="form-group">
-                               <textarea id="text" name="text" rows="5" class="form-control"
+                               <textarea id="text" name="description" rows="5" class="form-control"
                                placeholder="Genre Description"></textarea>
                             </div>
                             
                             <div class="form-group ">
                                <label>Status</label>
-                               <select class="form-control" id="exampleFormControlSelect1">
+                               <select class="form-control" id="exampleFormControlSelect1" name="genre_status">
                                 <option disabled="" selected>Select a status</option>
                                 <option value="Active">Active</option>
                                 <option value="Inactive">Inactive</option>
@@ -36,6 +48,7 @@
                                
                             </div>
                          </form>
+                         
                       </div>
                    </div>
                 </div>
