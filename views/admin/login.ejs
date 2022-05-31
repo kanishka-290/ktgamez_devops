@@ -1,0 +1,110 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+    <meta name="csrf-token" content="82f2A3x6VcDs6jNEcVsQrLLVhXTaGh311mFiBc1w">
+    <link rel="icon" href="../images/KTGamez-512.png" type="image/x-icon"> <!-- Favicon-->
+    <title>Login - KT Gamez powered by Giro Gamez</title>
+    <meta name="description" content="KT Gamez powered by Giro Gamez">
+    <meta name="author" content="KT Gamez powered by Giro Gamez">
+    
+    
+    <link rel="stylesheet" href="../css/bootstrap.min.css">
+    <link rel="stylesheet" href="../css/font-awesome.min.css">    
+    <link rel="stylesheet" href="../css/vivify.min.css">    
+
+        
+        
+    <!-- Custom Css -->
+    <link rel="stylesheet" href="../css/site.min.css">
+</head>
+
+<body class="theme-cyan font-montserrat">
+    
+<!-- Page Loader -->
+<div class="page-loader-wrapper">
+    <div class="loader">
+        <div class="bar1"></div>
+        <div class="bar2"></div>
+        <div class="bar3"></div>
+        <div class="bar4"></div>
+        <div class="bar5"></div>
+    </div>
+</div>
+
+<div class="pattern">
+    <span class="red"></span>
+    <span class="indigo"></span>
+    <span class="blue"></span>
+    <span class="green"></span>
+    <span class="orange"></span>
+</div>
+
+<div class="auth-main particles_js">
+    <div class="auth_div vivify popIn">
+        <div class="auth_brand">
+            <a class="navbar-brand" href="javascript:void(0);"><img src="../images/KTgamez.png" width="100%" class="d-inline-block align-top mr-2" alt="KT Gamez"></a>
+        </div>
+        <div class="card">
+            <div class="body">
+                <p class="lead">Login to your account</p>
+                <!-- Session Status -->
+        
+<!-- Validation Errors -->
+
+                <form class="form-auth-small m-t-20" method="POST" action="https://mitul.ktgamez.com/superadmin/login">
+                <input type="hidden" name="_token" value="82f2A3x6VcDs6jNEcVsQrLLVhXTaGh311mFiBc1w">                    <div class="form-group">
+                   
+                        <label class="block font-medium text-sm text-gray-700 control-label sr-only" for="email">
+    Email
+</label>
+
+<input  class="rounded-md shadow-sm border-gray-300 focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50 form-control round" id="email" type="email" name="email" required="required" autofocus="autofocus">
+
+                    </div>
+                    <div class="form-group">
+                     
+
+                        <label class="block font-medium text-sm text-gray-700 control-label sr-only" for="password">
+    Password
+</label>
+
+<input  class="rounded-md shadow-sm border-gray-300 focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50 form-control round" id="password" type="password" name="password" required="required" autocomplete="current-password">
+                    </div>
+                    <div class="form-group clearfix">
+                        <label class="fancy-checkbox element-left">
+                           
+                            <input id="remember_me" type="checkbox" class="rounded border-gray-300 text-indigo-600 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50" name="remember">
+                    <span class="ml-2 text-sm text-gray-600">Remember me</span>
+                        </label>								
+                    </div>
+                    <button type="submit" class="inline-flex items-center px-4 py-2 bg-gray-800 border border-transparent rounded-md font-semibold text-xs text-white uppercase tracking-widest hover:bg-gray-700 active:bg-gray-900 focus:outline-none focus:border-gray-900 focus:ring ring-gray-300 disabled:opacity-25 transition ease-in-out duration-150 btn btn-primary btn-round btn-block">
+    Log in
+</button>
+                
+                    <div class="bottom">
+                       
+                                            <a class="underline text-sm text-gray-600 hover:text-gray-900" href="https://mitul.ktgamez.com/forgot-password">
+                        Forgot your password?
+                    </a>
+                                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+    <div id="particles-js"></div>
+</div>
+
+<!-- Scripts -->
+
+<script src="../js/libscripts.bundle.js"></script>
+<script src="../js/vendorscripts.bundle.js"></script>
+<script src="../js/mainscripts.bundle.js"></script>
+
+
+    
+</body>
+</html>

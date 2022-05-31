@@ -1,0 +1,75 @@
+<%- include("header") -%>
+<!-- Page Content  -->
+      <div id="content-page" class="content-page">
+         <div class="container-fluid">
+            <div class="row">
+               <div class="col-sm-12">
+                  <div class="iq-card">
+                     <div class="iq-card-header d-flex justify-content-between">
+                        <div class="iq-header-title">
+                           <h4 class="card-title">Add Game</h4>
+                        </div>
+                     </div>
+                     <div class="iq-card-body">
+                        <form action="movie-view.html">
+                           <div class="row">
+                              <div class="col-lg-7">
+                                 <div class="row">
+                                    <div class="col-12 form-group">
+                                       <input type="text" class="form-control" placeholder="Title">
+                                    </div>
+                                    <div class="col-md-12 form-group">
+                                        <select class="form-control" id="exampleFormControlSelect1">
+                                           <option disabled="">Select Game Genre</option>
+                                           <option>Comedy</option>
+                                           <option>Crime</option>
+                                           <option>Drama</option>
+                                           <option>Horror</option>
+                                           <option>Romance</option>
+                                        </select>
+                                     </div>
+                                    <div class="col-12 form-group">
+                                        <textarea id="text" name="text" rows="5" class="form-control"
+                                           placeholder="Description"></textarea>
+                                     </div>
+                                     <div class="col-md-12 form-group">
+                                        <label for="CoverURL">Cover URL</label>
+                                        <input type="text" id="CoverURL" class="form-control" placeholder="Enter Cover URL" name="CoverURL" onblur="coverurl();">
+                                    </div>
+                                    <div class="col-md-12 form-group">
+                                        <label for="CoverURL">Game URL</label>
+                                        <input type="text" id="CoverURL" class="form-control" placeholder="Enter Cover URL" name="CoverURL" onblur="coverurl();">
+                                    </div>
+                                    <div class="col-md-12 form-group">
+                                        <label for="CoverURL">Status</label>
+                                        <select class="form-control" id="exampleFormControlSelect1">
+                                            <option disabled="" selected>Select Game Genre</option>
+                                            <option>Active</option>
+                                            <option>Inactive</option>
+                                         </select>
+                                    </div>
+                                 </div>
+                              </div>
+                              <div class="col-lg-5">
+                                 <div class="d-block position-relative">
+                                    <div class="form_video-upload">
+                                       <input type="file" accept="video/mp4,video/x-m4v,video/*" multiple>
+                                       <p>Cover preview</p>
+                                    </div>
+                                 </div>
+                              </div>
+                           </div>
+                           <div class="row">
+                              
+                              <div class="col-12 form-group ">
+                                 <button type="submit" class="btn btn-primary">Submit</button>
+                              </div>
+                           </div>
+                        </form>
+                     </div>
+                  </div>
+               </div>
+            </div>
+         </div>
+      </div>
+<%- include("footer") -%>

@@ -2,12 +2,13 @@ require('dotenv').config()
 const express = require("express");
 const cors = require("cors");
 const bodyParser = require("body-parser");
+const path = require('path');
 const app = express();
 const store = require("store2")
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }))
 app.set('view engine', 'ejs');
-
+app.use(express.static(path.join(__dirname,"public")));
 
 
 app.use(cors({
@@ -18,7 +19,6 @@ app.use(cors({
 
 
 app.get("/",function (req,res) {
-    //res.send("Hello user");
     res.render("notfound.ejs")
 })
 store.set("condition",false)
@@ -26,6 +26,9 @@ module.exports = app
 
 
 require('./routes/api/user')(app);
+require('./routes/admin/dashboard')(app);
+
+
 
 let PORT = process.env.PORT || 3000;
 

@@ -1,6 +1,6 @@
 FROM node:14.17.6
-WORKDIR /app
-COPY package.json ./app
+WORKDIR /
+COPY package.json ./
 RUN npm install
-COPY . /app
+COPY . /
 CMD ["npm","start"]
