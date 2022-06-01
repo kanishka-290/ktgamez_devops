@@ -40,7 +40,6 @@ describe("Test login API",()=>{
             res.should.have.status(200);
             res.body.should.be.a("object");
             res.body.should.have.property("errors");
-            res.body.should.have.property("message");
             done();
         })
     });
@@ -64,13 +63,14 @@ describe("Test login API",()=>{
 
     //with Correct Detail
     it("with Correct Email", (done)=>{
-        let post = {
-            email:"existingemail@gmail.com",
-            password:"Admin@123"
-        }
+        
+        
         chai.request(app)
         .post("/api/login")
-        .send(post)
+        .send({
+            "email":"existingemail@gmail.com",
+            "password":"Admin@123"
+        })
         .end(function(err, res){
             res.should.have.status(200);
             res.body.should.be.a("object");
@@ -81,15 +81,16 @@ describe("Test login API",()=>{
     });
 
     //with Correct Detail and verified token
-    it("with Correct Email", (done)=>{
-        let post = {
-            email:"validemail@gmail.com",
-            password:"Admin@123"
-        }
+    it("with Correct verified Email login", (done)=>{
+         
         chai.request(app)
         .post("/api/login")
-        .send(post)
+        .send({
+            email:"validemail@gmail.com",
+            password:"Admin@123"
+        })
         .end(function(err, res){
+            
             res.should.have.status(200);
             res.body.should.be.a("object");
             res.body.should.have.property("token");

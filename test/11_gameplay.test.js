@@ -28,11 +28,11 @@ describe('Test game play API', () => {
     it("with correct token and unverified email", (done)=>{
         chai.request(app)
         .get("/api/play/43")
-        .set("token",store("token"))
+        .set("Authorization","Bearer "+store('token'))
         .end(function(err, res){
             res.should.have.status(200);
             res.body.should.be.a("object");
-            res.body.should.have.property("message");
+            res.body.should.have.property("id");
             done();
         }
         )
@@ -60,9 +60,7 @@ describe('Test game play API', () => {
         .end(function(err, res){
             res.should.have.status(200);
             res.body.should.be.a("object");
-            res.body.should.have.property("id");
-            res.body.should.have.property("game_cover_url");
-            res.body.should.have.property("game_play_url");
+            res.body.should.have.property("message");
             done();
         }
         )

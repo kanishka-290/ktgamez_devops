@@ -164,6 +164,7 @@ const addgame = async (req,res) =>{
 
     res.render("admin/gamecreate.ejs",{alert:[],game_genre:result});
 }
+
 const addgame_post = async (req,res) =>{
 
     const connection = await sqlConnect()
@@ -192,6 +193,7 @@ const addgame_post = async (req,res) =>{
     res.redirect("game");
     connection.end();
 }
+
 const gameview = async (req,res) =>{
 
     var gamedelete = store.get("gamedelete") || false;
@@ -212,6 +214,7 @@ const gameview = async (req,res) =>{
     connection.end();
     res.render("admin/gameview.ejs",{games:result,delete_data:gamedelete,update_data:gameupdate});
 }
+
 const gamedelete = async (req,res) =>{
     if(req.params.id=='' || req.params.id==null || req.params.id==undefined){
         return res.redirect("../superadmin/");
@@ -225,6 +228,50 @@ const gamedelete = async (req,res) =>{
     connection.end();
 }
 
+const gameeditlink = async (req,res) =>{
+    if(req.params.id=='' || req.params.id==null || req.params.id==undefined){
+        return res.redirect("/superadmin/")
+    }
+    const connection = await sqlConnect();
+    var [result2,field2] = await connection.query("SELECT * FROM `game_genres`")
+    var [result,field] = await connection.query("SELECT * FROM `giro_games` WHERE `id`='"+req.params.id+"'");
+
+    if(result.length === 0){
+        return res.redirect("/superadmin/")
+    }
+    
+    res.render("admin/gameedit.ejs",{alert:[],game_genre:result2,game_data:result[0]});
+
+    connection.end()
+}
+
+const gameupdate = async (req,res) =>{
+    
+    const errors = validationResult(req);
+    
+    if(!errors.isEmpty()){
+        const alert = errors.array()
+        return res.render("admin/gameedit.ejs",{alert,data:req.body})
+    }
+    const connection = await sqlConnect()
+
+    var [result,field] = await connection.query("SELECT `id` FROM `giro_games` WHERE `game_name`='"+req.body.gane_name+"' AND  `id`!='"+req.params.id+"'")
+    if(result.length !== 0){
+        alert = [
+            {
+                msg:"Game already exist"
+            }
+        ]
+        return res.render("admin/genreedit.ejs",{alert,data:req.body})
+    }
+    
+    await connection.query("UPDATE `giro_games` SET `game_name`='"+req.body.game_name+"',`genre_id`='"+req.body.genre_id+"',`game_description`='"+req.body.game_description+"',`game_cover_url`='"+req.body.game_cover_url+"',`game_play_url`='"+req.body.game_play_url+"',`game_status`='"+req.body.game_status+"' WHERE `id`='"+req.params.id+"'")
+    store.set("gameupdate",true)
+    res.redirect("game");
+    connection.end();
+   
+}
+
 
 const leaderboardgamecreate = (req,res) =>{
     res.render("admin/leaderboardgamecreate.ejs");
@@ -233,8 +280,13 @@ const leaderboardgameview = (req,res) =>{
     res.render("admin/leaderboardgameview.ejs");
 
 }
-const users = (req,res) =>{
-    res.render("admin/users.ejs")
+
+// Users Management #######################################
+const users = async (req,res) =>{
+    const connection = await sqlConnect();
+    var [result,field] = await connection.query("SELECT * FROM `users`")
+    connection.end();
+    res.render("admin/users.ejs",{users:result})
 }
 
 const settings = (req,res) =>{
@@ -264,6 +316,8 @@ module.exports = {
     addgame_post,
     gameview,
     gamedelete,
+    gameeditlink,
+    gameupdate,
 
 
     leaderboardgamecreate,

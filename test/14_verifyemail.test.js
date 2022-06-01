@@ -44,7 +44,7 @@ describe('Verify Email', () => {
     it("With valid Token Already verified", (done)=>{
         chai.request(app)
         .post("/api/email/verification-notification")
-        .set("token",store("verified_token"))
+        .set("Authorization","Bearer "+store('verified_token'))
         .send({})
         .end(function(err, res){
             res.should.have.status(200);
@@ -59,7 +59,7 @@ describe('Verify Email', () => {
     it("With valid Token not verified", (done)=>{
         chai.request(app)
         .post("/api/email/verification-notification")
-        .set("token",store("token"))
+        .set("Authorization","Bearer "+store('token'))
         .send({})
         .end(function(err, res){
             res.should.have.status(200);

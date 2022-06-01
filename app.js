@@ -21,7 +21,6 @@ app.use(cors({
 app.get("/",function (req,res) {
     res.render("notfound.ejs")
 })
-store.set("condition",false)
 module.exports = app
 
 

@@ -42,7 +42,7 @@ describe("play and win games", ()=>{
     it("With valid token", (done)=>{
         chai.request(app)
         .get("/api/games")
-        .set("token",store("verified_token"))
+        .set("Authorization","Bearer "+store('verified_token'))
         .end(function(err, res){
             res.should.have.status(200);
             res.body.should.be.a("array");

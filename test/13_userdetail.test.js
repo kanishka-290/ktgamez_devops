@@ -15,7 +15,7 @@ describe("Get User Details", async ()=>{
 
     // var check = function(done) {
         
-    //     if (store('condition')==true) done();
+    //     if (store.get('condition')==true) done();
     //     else setTimeout( function(){ 
     //         console.log("Hi")
             
@@ -29,7 +29,7 @@ describe("Get User Details", async ()=>{
     it("with correct token", (done)=>{
         chai.request(app)
         .get("/api/user")
-        .set("token",store('token'))
+        .set("Authorization","Bearer "+store('token'))
         .end(function(err, res){
             res.should.have.status(200);
             res.body.should.be.a("object");

@@ -181,7 +181,7 @@ const register = async (req,res) =>{
                 var loginTIme = moment().format("YYYY MM DD hh:mm:ss");
                 //var send_mail_function = send_mail("aryan.server5638@gmail.com",email,"You are successfully registered with ktgamez","You are successfully registered with ktgamez with this email address.");
                 await jwt.sign({result},"secretkey",(err,token)=>{
-                    console.log("Email: "+email)
+                    //console.log("Email: "+email)
                     if(err){
                         console.log(err)
                     }else{
@@ -201,7 +201,7 @@ const register = async (req,res) =>{
                                     if (err) {
                                         console.log(err);
                                     } else {
-                                        console.log('Message sent: ' + info.response);
+                                        //console.log('Message sent: ' + info.response);
                                     }
                                 });
                             }
@@ -268,7 +268,6 @@ const login = async (req,res) =>{
          })
       }else{
  
-     
       const connection  = await sqlConnect();
  
       var [result,field] = await connection.query("SELECT `id` FROM `users` WHERE `email`='"+email+"' AND `password`='"+md5(password)+"'")
@@ -286,7 +285,7 @@ const login = async (req,res) =>{
       connection.end();
       }
     }catch(err){
-        res.send({ "error": "Something went wrong."})
+        res.send({ "error": "Something went wrong"})
     }
 };
 
@@ -794,7 +793,7 @@ const forgotpassword = async (req,res) =>{
                     if (err) {
                         console.log(err);
                     } else {
-                        console.log('Message sent: ' + info.response);
+                        //console.log('Message sent: ' + info.response);
                     }
                 });
             }
@@ -828,12 +827,12 @@ const resetpassword = async (req,res) =>{
 
 const resetpassword2 = async (req,res) =>{
     
-    console.log(req.body);
+    //console.log(req.body);
     jwt.verify(req.token,process.env.SECRET_KEY, async (err,data)=>{
         if(err){
             res.render("notfound.ejs")
         }else{
-            console.log(data);
+            //console.log(data);
             const connection = await sqlConnect();
             var [update,ufields] = await connection.query("UPDATE `users` SET `password`='"+md5(req.body.password1)+"' WHERE `id`='"+data.userId+"'")
             connection.end();
@@ -856,7 +855,7 @@ const googlelogin = async (req,res) =>{
     client.verifyIdToken({idToken,audience:process.env.GOOGLE_AUTH_CLIENTID})
     .then(async response =>{
         const connection = await sqlConnect();
-        console.log(response)
+        //console.log(response)
         const {email_verified,email,name,picture} = response.payload;
         
         var [result,findDetail] = await connection.query("SELECT `id` FROM `users` WHERE `email`='"+email+"'");
@@ -865,7 +864,7 @@ const googlelogin = async (req,res) =>{
 
             var loginTIme = moment().format("YYYY MM DD hh:mm:ss");
             jwt.sign({loginTIme,result},'secretkey',{ expiresIn: '48h'},(err,token)=>{
-                console.log("Exist ",token)
+                //console.log("Exist ",token)
             res.send({token})
          })
         }else{
@@ -890,7 +889,7 @@ const googlelogin = async (req,res) =>{
             var loginTIme = moment().format("YYYY MM DD hh:mm:ss");
             jwt.sign({loginTIme,result},'secretkey',{ expiresIn: '48h'},(err,token)=>{
                 
-                console.log("New ",token)
+                //console.log("New ",token)
              res.send({token})
          })
             
@@ -916,7 +915,7 @@ const googlelogin = async (req,res) =>{
 const facebooklogin = async (req,res) =>{
 
     const {userID,accesstoken} = req.body;
-    console.log(req.body)
+    //console.log(req.body)
     let urlGraphFacebook = `https://graph.facebook.com/v2.11/${userID}/?fields=id,name,email,picture&access_token=${accesstoken}`;
     fetch(urlGraphFacebook,{
         method:"GET"
@@ -1067,13 +1066,13 @@ const verifyemailaccount = async (req,res) =>{
                             console.log(err)
                         }else{
                             var link = "https://ktgamez.herokuapp.com/verifyemail/"+token
-                            console.log(link)
+                            //console.log(link)
                             ejs.renderFile("views/welcome.ejs", { link: link }, function (err, data) {
                                 if (err) {
                                     console.log(err);
                                 } else {
                                     //console.log(data)
-                                    console.log(email)
+                                    //console.log(email)
                                     var mainOptions = {
                                         from: 'aryan.server5638@gmail.com',
                                         to: email,
@@ -1084,7 +1083,7 @@ const verifyemailaccount = async (req,res) =>{
                                         if (err) {
                                             console.log(err);
                                         } else {
-                                            console.log('Message sent: ' + info.response);
+                                            //console.log('Message sent: ' + info.response);
                                         }
                                     });
                                 }

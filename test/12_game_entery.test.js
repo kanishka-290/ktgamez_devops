@@ -29,7 +29,7 @@ describe('Game entry updated or not', () => {
     it("Without token", (done)=>{
         chai.request(app)
         .post("/api/entry")
-        .set("token","123")
+        .set("Authorization","123")
         .end(function(err, res){
             res.should.have.status(200);
             res.body.should.be.a("object");
@@ -43,7 +43,7 @@ describe('Game entry updated or not', () => {
     it("Without Game id", (done)=>{
         chai.request(app)
         .post("/api/entry")
-        .set("token",store("verified_token"))
+        .set("Authorization","Bearer "+store('verified_token'))
         .end(function(err, res){
             res.should.have.status(200);
             res.body.should.be.a("object");
@@ -58,7 +58,7 @@ describe('Game entry updated or not', () => {
     it("With Game id", (done)=>{
         chai.request(app)
         .post("/api/entry")
-        .set("token",store("verified_token"))
+        .set("Authorization","Bearer "+store('verified_token'))
         .send({game_id: '1'})
         .end(function(err, res){
             res.should.have.status(200);
@@ -75,7 +75,7 @@ describe('Game entry updated or not', () => {
     it("With incorrect Game id", (done)=>{
         chai.request(app)
         .post("/api/entry")
-        .set("token",store("verified_token"))
+        .set("Authorization","Bearer "+store('verified_token'))
         .send({game_id: '0'})
         .end(function(err, res){
             res.should.have.status(200);

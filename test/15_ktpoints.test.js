@@ -25,10 +25,10 @@ describe("KT Points History", () =>{
     })
 
     //Without incorrect token
-    it("Without token", (done)=>{
+    it("Without incorrect token", (done)=>{
         chai.request(app)
         .get("/api/points")
-        .set("token","123")
+        .set("Authorization","Bearer 123"+store('verified_token'))
         .end(function(err, res){
             res.should.have.status(200);
             res.body.should.be.a("object");
@@ -42,10 +42,10 @@ describe("KT Points History", () =>{
     it("User having history", (done)=>{
         chai.request(app)
         .get("/api/points")
-        .set("token",store("token"))
+        .set("Authorization","Bearer "+store('verified_token'))
         .end(function(err, res){
             res.should.have.status(200);
-            res.body.should.be.a("object");
+            res.body.should.be.a("array");
             done();
         }
         )

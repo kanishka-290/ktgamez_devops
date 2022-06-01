@@ -70,6 +70,25 @@ module.exports =function(app) {
          .exists()
    ], admin.addgame_post)
    app.get("/superadmin/gamedelete/:id", admin.gamedelete)
+   app.get("/superadmin/gameupdate-:id", admin.gameeditlink)
+   app.post("/superadmin/gameupdate-:id",[
+      check("game_name","Game name is required")
+         .exists()
+         .isLength({max:30,min:2}),
+      check("genre_id","Genre is required")
+         .exists()
+         .isNumeric(),
+      check("game_description","Description is required")
+         .exists()
+         .isLength({max:300,min:2}),
+      check("game_cover_url","Game cover url is required")
+         .exists(),
+      check("game_play_url","Game play url is required")
+         .exists(),
+      check("game_status","Genre status is required")
+         .exists()
+   ], admin.gameupdate)
+
 
 
    app.get("/superadmin/game", admin.gameview)

@@ -28,10 +28,11 @@ describe('Play and win games token', () => {
     it("with invalid token", (done)=>{
         chai.request(app)
         .post("/api/compete/1")
+        .set("Authorization","Bearer 123"+store('verified_token'))
         .end(function(err, res){
             res.should.have.status(200);
             res.body.should.be.a("object");
-            res.body.should.have.property("message","Unauthenticated");
+            res.body.should.have.property("message","Unauthenticated.");
             done();
         }
         )
@@ -41,7 +42,7 @@ describe('Play and win games token', () => {
     it("with valid token invalid gameId", (done)=>{
         chai.request(app)
         .post("/api/compete/0")
-        .set("token",store("verified_token"))
+        .set("Authorization","Bearer "+store('verified_token'))
         .end(function(err, res){
             res.should.have.status(200);
             res.body.should.be.a("object");
@@ -55,7 +56,7 @@ describe('Play and win games token', () => {
     it("with valid token valid gameId", (done)=>{
         chai.request(app)
         .post("/api/compete/1")
-        .set("token",store("verified_token"))
+        .set("Authorization","Bearer "+store('verified_token'))
         .end(function(err, res){
             res.should.have.status(200);
             res.body.should.be.a("array");

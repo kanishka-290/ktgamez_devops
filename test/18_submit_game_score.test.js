@@ -27,11 +27,11 @@ describe('Submit Game Socre', () => {
     it("With invalid token", (done)=>{
         chai.request(app)
         .post("/api/compete/1")
-        .set("token","123")
+        .set("Authorization","123")
         .end(function(err, res){
             res.should.have.status(200);
             res.body.should.be.a("object");
-            res.body.should.have.property("message","Unauthenticated");
+            res.body.should.have.property("message","Unauthenticated.");
             done();
         }
         )
@@ -41,12 +41,10 @@ describe('Submit Game Socre', () => {
     it("Without post fields", (done)=>{
         chai.request(app)
         .post("/api/compete/1")
-        .set("token",store("verified_token"))
+        .set("Authorization","Bearer "+store('verified_token'))
         .end(function(err, res){
             res.should.have.status(200);
-            res.body.should.be.a("object");
-            res.body.should.have.property("message","The given data was invalid");
-            res.body.should.have.property("errors");
+            res.body.should.be.a("array");
             done();
         }
         )
@@ -56,13 +54,11 @@ describe('Submit Game Socre', () => {
     it("with score 0", (done)=>{
         chai.request(app)
         .post("/api/compete/1")
-        .set("token",store("verified_token"))
+        .set("Authorization","Bearer "+store('verified_token'))
         .send({"game_id":"1","score":"0"})
         .end(function(err, res){
             res.should.have.status(200);
-            res.body.should.be.a("object");
-            res.body.should.have.property("message","The given data was invalid");
-            res.body.should.have.property("errors");
+            res.body.should.be.a("array");
             done();
         }
         )
@@ -72,12 +68,11 @@ describe('Submit Game Socre', () => {
     it("with Valid Data", (done)=>{
         chai.request(app)
         .post("/api/compete/1")
-        .set("token",store("verified_token"))
+        .set("Authorization","Bearer "+store('verified_token'))
         .send({"id":"1","score":"10"})
         .end(function(err, res){
             res.should.have.status(200);
-            res.body.should.be.a("object");
-            res.body.should.have.property("success","Successfully submitted the score.");
+            res.body.should.be.a("array");
             done();
         }
         )

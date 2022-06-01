@@ -28,7 +28,7 @@ describe("User Referral",()=>{
     it("With invalid token", (done)=>{
         chai.request(app)
         .post("/api/refer")
-        .set("token","123")
+        .set("Authorization","123")
         .end(function(err, res){
             res.should.have.status(200);
             res.body.should.be.a("object");
@@ -42,7 +42,7 @@ describe("User Referral",()=>{
     it("Withour referral Code", (done)=>{
         chai.request(app)
         .post("/api/refer")
-        .set("token",store('token'))
+        .set("Authorization","Bearer "+store('token'))
         .end(function(err, res){
             res.should.have.status(200);
             res.body.should.be.a("object");
@@ -57,7 +57,7 @@ describe("User Referral",()=>{
     it("With invalid referral Code", (done)=>{
         chai.request(app)
         .post("/api/refer")
-        .set("token",store('token'))
+        .set("Authorization","Bearer "+store('token'))
         .set("referral_code","123")
         .end(function(err, res){
             res.should.have.status(200);
@@ -72,7 +72,7 @@ describe("User Referral",()=>{
     it("With valid referral Code", (done)=>{
         chai.request(app)
         .post("/api/refer")
-        .set("token",store("token"))
+        .set("Authorization","Bearer "+store('token'))
         .set("referral_code","I020MMX1YNXJ")
         .end(function(err, res){
             res.should.have.status(200);
@@ -87,7 +87,7 @@ describe("User Referral",()=>{
     it("Already used referral Code", (done)=>{
         chai.request(app)
         .post("/api/refer")
-        .set("token",store("token"))
+        .set("Authorization","Bearer "+store('token'))
         .set("referral_code","M4DHUVGXXJ5B")
         .end(function(err, res){
             res.should.have.status(200);
@@ -102,7 +102,7 @@ describe("User Referral",()=>{
     it("Already used referral Code", (done)=>{
         chai.request(app)
         .post("/api/refer")
-        .set("token",store("verified_token"))
+        .set("Authorization","Bearer "+store('verified_token'))
         .set("referral_code","I020MMX1YNXJ")
         .end(function(err, res){
             res.should.have.status(200);

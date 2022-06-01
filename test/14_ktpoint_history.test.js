@@ -29,7 +29,7 @@ describe('KT Point History', () => {
     it("with invalid token", (done)=>{
         chai.request(app)
         .get("/api/ktpointhistory")
-        .set("token","123")
+        .set("Authorization","123")
         .end(function(err, res){
             res.should.have.status(200);
             res.body.should.be.a("object");
@@ -43,7 +43,7 @@ describe('KT Point History', () => {
     it("with valid token", (done)=>{
         chai.request(app)
         .get("/api/ktpointhistory")
-        .set("token",store("token"))
+        .set("Authorization","Bearer "+store('token'))
         .end(function(err, res){
             res.should.have.status(200);
             res.body.should.be.a("object");
