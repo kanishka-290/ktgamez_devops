@@ -4,6 +4,17 @@
          <div class="container-fluid">
             <div class="row">
                <div class="col-sm-12">
+                  <% if(typeof alert != 'undefiend'){ %>
+                     <% alert.forEach(function(error){ %>
+                 <div class="alert alert-warning alert-dismissible fade show" role="alert">
+                   
+                   <strong><%= error.msg %></strong>
+                     <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                         <span aria-hidden="true">&times;</span>
+                       </button>
+                   </div>
+                   <% }) %>
+                   <% } %>
                   <div class="iq-card">
                      <div class="iq-card-header d-flex justify-content-between">
                         <div class="iq-header-title">
@@ -11,39 +22,37 @@
                         </div>
                      </div>
                      <div class="iq-card-body">
-                        <form action="movie-view.html">
+                        <form action="gamecreate" method="POST">
                            <div class="row">
                               <div class="col-lg-7">
                                  <div class="row">
                                     <div class="col-12 form-group">
-                                       <input type="text" class="form-control" placeholder="Title">
+                                       <input type="text" class="form-control" name="game_name" placeholder="Title">
                                     </div>
                                     <div class="col-md-12 form-group">
-                                        <select class="form-control" id="exampleFormControlSelect1">
-                                           <option disabled="">Select Game Genre</option>
-                                           <option>Comedy</option>
-                                           <option>Crime</option>
-                                           <option>Drama</option>
-                                           <option>Horror</option>
-                                           <option>Romance</option>
+                                        <select class="form-control" id="exampleFormControlSelect1" name="genre_id">
+                                           <option disabled="" selected>Select Game Genre</option>
+                                           <% game_genre.forEach(function(data){ %>
+                                           <option value="<%= data.id %>"><%= data.genre_name %></option>
+                                           <% }) %>
                                         </select>
                                      </div>
                                     <div class="col-12 form-group">
-                                        <textarea id="text" name="text" rows="5" class="form-control"
-                                           placeholder="Description"></textarea>
+                                        <textarea id="text" rows="5" class="form-control"
+                                           placeholder="Description" name="game_description"></textarea>
                                      </div>
                                      <div class="col-md-12 form-group">
                                         <label for="CoverURL">Cover URL</label>
-                                        <input type="text" id="CoverURL" class="form-control" placeholder="Enter Cover URL" name="CoverURL" onblur="coverurl();">
+                                        <input type="text" id="CoverURL"  class="form-control" placeholder="Enter Cover URL" name="game_cover_url" onchange="coverurl();">
                                     </div>
                                     <div class="col-md-12 form-group">
                                         <label for="CoverURL">Game URL</label>
-                                        <input type="text" id="CoverURL" class="form-control" placeholder="Enter Cover URL" name="CoverURL" onblur="coverurl();">
+                                        <input type="text" class="form-control" placeholder="Enter Play URL" name="game_play_url" >
                                     </div>
                                     <div class="col-md-12 form-group">
                                         <label for="CoverURL">Status</label>
-                                        <select class="form-control" id="exampleFormControlSelect1" name="genre_status">
-                                            <option disabled="" selected>Select Game Genre</option>
+                                        <select class="form-control" id="exampleFormControlSelect1" name="game_status">
+                                            <option disabled="" selected>Select Game staus</option>
                                             <option value="Active">Active</option>
                                             <option value="Inactive">Inactive</option>
                                          </select>
@@ -52,7 +61,7 @@
                               </div>
                               <div class="col-lg-5">
                                  <div class="d-block position-relative">
-                                    <div class="form_video-upload">
+                                    <div class="form_video-upload" id="form_video-upload">
                                        <input type="file" accept="video/mp4,video/x-m4v,video/*" multiple>
                                        <p>Cover preview</p>
                                     </div>
@@ -73,3 +82,12 @@
          </div>
       </div>
 <%- include("footer") -%>
+<script>
+   function coverurl(){
+      var src = $("#CoverURL").val();
+      
+      $("#form_video-upload").html("<img src='"+src+"' alt='Game cover image' style='max-height:100%; max-width:100%'/>") ;
+
+   }
+</script>
+

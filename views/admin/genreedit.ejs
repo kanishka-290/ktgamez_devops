@@ -1,0 +1,63 @@
+<%- include("header") -%>
+<!-- Page Content  -->
+<div id="content-page" class="content-page">
+    <div class="container-fluid">
+       <div class="row">
+          <div class="col-sm-12">
+            <% if(typeof alert != 'undefiend'){ %>
+               <% alert.forEach(function(error){ %>
+           <div class="alert alert-warning alert-dismissible fade show" role="alert">
+             
+             <strong><%= error.msg %></strong>
+               <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                   <span aria-hidden="true">&times;</span>
+                 </button>
+             </div>
+             <% }) %>
+             <% } %>
+             <div class="iq-card">
+                <div class="iq-card-header d-flex justify-content-between">
+                   <div class="iq-header-title">
+                      <h4 class="card-title">Edit Game Genre</h4>
+                   </div>
+                </div>
+                
+                <div class="iq-card-body">
+                   <div class="row">
+                      <div class="col-lg-12">
+                         <form action="genreupdate-<%= data.id %>" method="POST">
+                            <div class="form-group">
+                                <input type="hidden" class="form-control" value="<%= data.id %>" name="id">
+                             </div>
+                            <div class="form-group">
+                               <input type="text" class="form-control" placeholder="Genre Name" value="<%= data.genre_name %>" name="genre_name">
+                            </div>
+                            <div class="form-group">
+                               <textarea id="text" name="description" rows="5" class="form-control"
+                               placeholder="Genre Description" value="<%= data.genre_name %>"><%= data.genre_name %></textarea>
+                            </div>
+                            
+                            <div class="form-group ">
+                               <label>Status</label>
+                               <select class="form-control" id="exampleFormControlSelect1" name="genre_status">
+                                <option disabled="" selected>Select a status</option>
+                                <option value="Active" <% if(data.genre_status == 'Active'){ %> Selected <% } %>>Active</option>
+                                <option value="Inactive" <% if(data.genre_status == 'Inactive'){ %> Selected <% } %>>Inactive</option>
+                                
+                             </select>
+                            </div>
+                            <div class="form-group ">
+                               <button type="submit" class="btn btn-primary">Submit</button>
+                               
+                            </div>
+                         </form>
+                         
+                      </div>
+                   </div>
+                </div>
+             </div>
+          </div>
+       </div>
+    </div>
+ </div>
+<%- include("footer") -%>

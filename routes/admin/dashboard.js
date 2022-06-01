@@ -36,10 +36,42 @@ module.exports =function(app) {
       check("genre_status","Genre status is required")
          .exists()
    ], admin.grnrecreate_post)
-
-
+   app.get("/superadmin/genredelete/:id", admin.genredelete)
+   app.get("/superadmin/genreupdate-:id", admin.genreeditlink)
+   app.post("/superadmin/genreupdate-:id",[
+      check("genre_name","Genre name is required")
+         .exists()
+         .isLength({max:30,min:2}),
+      check("description","Description is required")
+         .exists()
+         .isLength({max:300,min:2}),
+      check("genre_status","Genre status is required")
+         .exists()
+   ], admin.genreupdate)
    app.get("/superadmin/genreview", admin.genrelist)
+
+
    app.get("/superadmin/gamecreate", admin.addgame)
+   app.post("/superadmin/gamecreate",[
+      check("game_name","Game name is required")
+         .exists()
+         .isLength({max:30,min:2}),
+      check("genre_id","Genre is required")
+         .exists()
+         .isNumeric(),
+      check("game_description","Description is required")
+         .exists()
+         .isLength({max:300,min:2}),
+      check("game_cover_url","Game cover url is required")
+         .exists(),
+      check("game_play_url","Game play url is required")
+         .exists(),
+      check("game_status","Genre status is required")
+         .exists()
+   ], admin.addgame_post)
+   app.get("/superadmin/gamedelete/:id", admin.gamedelete)
+
+
    app.get("/superadmin/game", admin.gameview)
    app.get("/superadmin/competecreate", admin.leaderboardgamecreate)
    app.get("/superadmin/compete", admin.leaderboardgameview)
