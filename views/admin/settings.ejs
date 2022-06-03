@@ -95,7 +95,7 @@
                                                     <br>
                                                     <% var date = JSON.parse(data[2].value) %>
                                                     <label>From Date - <%= date.FromDate %></label>
-                                                    <input type="datetime-local" class="form-control" placeholder="FromDate" name="FromDate" value="<%= Date.parse(date.FromDate) %>">
+                                                    <input type="datetime-local" class="form-control" placeholder="FromDate" name="FromDate" value="<%= date.FromDate %>">
                                                     <label>To Date - <%= date.ToDate %></label>
                                                     <input type="datetime-local" class="form-control" placeholder="ToDate" name="ToDate" value="<%= date.ToDate %>">
                                                 </div>
