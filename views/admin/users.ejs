@@ -53,7 +53,7 @@
                                         <tr role="row" class="odd">
                                             <td class="sorting_1"><%= i++ %></td>
                                             <td>
-                                                <img src="<% if(data.avatar=='' || data.avatar==null || data.avatar==undefined || data.avatar == '#'){ %> images/avatar.png <% }else{ data.avatar }%>"
+                                                <img src="<% if(data.avatar=='' || data.avatar==null || data.avatar==undefined || data.avatar == '#'){ %>../../images/avatar.png <% }else{ %> <%= data.avatar %> <% } %>"
                                                     class="img-fluid avatar-50" alt="<%= data.name %>">
                                             </td>
                                             <td><%= data.name %></td>

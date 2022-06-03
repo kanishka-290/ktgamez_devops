@@ -88,14 +88,80 @@ module.exports =function(app) {
       check("game_status","Genre status is required")
          .exists()
    ], admin.gameupdate)
-
-
-
    app.get("/superadmin/game", admin.gameview)
+
    app.get("/superadmin/competecreate", admin.leaderboardgamecreate)
+   app.post("/superadmin/competecreate",[
+      check("game_name","Game name is required")
+         .exists()
+         .isLength({max:30,min:2}),
+      check("genre_id","Genre is required")
+         .exists()
+         .isNumeric(),
+      check("entry_tokens","Entry Token is required")
+         .exists()
+         .isNumeric(),
+      check("game_description","Description is required")
+         .exists()
+         .isLength({max:300,min:2}),
+      check("game_cover_url","Game cover url is required")
+         .exists(),
+      check("game_play_url","Game play url is required")
+         .exists(),
+      check("game_status","Genre status is required")
+         .exists()
+   ], admin.leaderboardgamecreate_post)
+   app.get("/superadmin/leaderboardgameupdate-:id", admin.leaderboardgameeditlink)
+   app.post("/superadmin/leaderboardgameupdate-:id",[
+      check("game_name","Game name is required")
+         .exists()
+         .isLength({max:30,min:2}),
+      check("genre_id","Genre is required")
+         .exists()
+         .isNumeric(),
+      check("entry_tokens","Entry Token is required")
+         .exists()
+         .isNumeric(),
+      check("game_description","Description is required")
+         .exists()
+         .isLength({max:300,min:2}),
+      check("game_cover_url","Game cover url is required")
+         .exists(),
+      check("game_play_url","Game play url is required")
+         .exists(),
+      check("game_status","Genre status is required")
+         .exists()
+   ], admin.leaderboardgameupdate)
+   app.get("/superadmin/leaderboardgamedelete/:id", admin.leaderboardgamedelete)
+
+
+
    app.get("/superadmin/compete", admin.leaderboardgameview)
    app.get("/superadmin/user", admin.users)
    app.get("/superadmin/settings", admin.settings)
+   app.post("/superadmin/signupbonus",[
+      check("key","Key is required")
+         .exists()
+         .isLength({max:30,min:2}),
+      check("SignupBonus","Signup bonus required")
+         .exists()
+         .isNumeric(),
+   ], admin.signupbonus)
+   app.post("/superadmin/referralbonus",[
+      check("ReferralBonus","Referral Bonus bonus required")
+         .exists()
+         .isNumeric(),
+   ], admin.referralbonus)
+   app.post("/superadmin/leaderboardduration",[
+      check("FromDate","FromDate is required")
+         .exists()
+         .isLength({min:3}),
+         
+      check("ToDate","ToDate is required")
+         .exists()
+         .isLength({min:3}),
+   ], admin.leaderboard_duration)
+
    app.get("/superadmin/leaderboard", admin.referandwin)
 
 

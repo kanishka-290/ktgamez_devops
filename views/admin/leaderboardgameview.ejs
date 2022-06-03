@@ -4,6 +4,26 @@
     <div class="container-fluid">
        <div class="row">
           <div class="col-sm-12">
+            <% if(delete_data){ %>   
+                <div class="alert alert-warning alert-dismissible fade show" role="alert">
+                  
+                  <strong>Deleted Successfully</strong>
+                    <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                      </button>
+                  </div>
+                 
+                  <% } %> 
+                  <% if(update_data){ %>   
+                    <div class="alert alert-success alert-dismissible fade show" role="alert">
+                      
+                      <strong>Updated Successfully</strong>
+                        <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                          </button>
+                      </div>
+                     
+                      <% } %> 
              <div class="iq-card">
                 <div class="iq-card-header d-flex justify-content-between">
                    <div class="iq-header-title">
@@ -17,472 +37,35 @@
                    <div class="table-view">
                     <table class="data-tables table genre_table  dataTable no-footer" style="width: 100%;" id="DataTables_Table_0" role="grid" aria-describedby="DataTables_Table_0_info">
                         <thead>
-                            <tr role="row"><th style="width: 20px;" class="sorting_asc" tabindex="0" aria-controls="DataTables_Table_0" rowspan="1" colspan="1" aria-sort="ascending" aria-label="No: activate to sort column descending">No</th><th style="width: 39px;" class="sorting" tabindex="0" aria-controls="DataTables_Table_0" rowspan="1" colspan="1" aria-label="Game Name: activate to sort column ascending">Game Name</th><th style="width: 45px;" class="sorting" tabindex="0" aria-controls="DataTables_Table_0" rowspan="1" colspan="1" aria-label="Game Genre: activate to sort column ascending">Game Genre</th><th style="width: 88px;" class="sorting" tabindex="0" aria-controls="DataTables_Table_0" rowspan="1" colspan="1" aria-label="Game Description: activate to sort column ascending">Game Description</th><th style="width: 436px;" class="sorting" tabindex="0" aria-controls="DataTables_Table_0" rowspan="1" colspan="1" aria-label="Game URL: activate to sort column ascending">Game URL</th><th style="width: 50px;" class="sorting" tabindex="0" aria-controls="DataTables_Table_0" rowspan="1" colspan="1" aria-label="Game Status: activate to sort column ascending">Game Status</th><th style="width: 50px;" class="sorting" tabindex="0" aria-controls="DataTables_Table_0" rowspan="1" colspan="1" aria-label="Action: activate to sort column ascending">Action</th></tr>
+                            <tr role="row"><th style="width: 20px;" class="sorting_asc" tabindex="0" aria-controls="DataTables_Table_0" rowspan="1" colspan="1" aria-sort="ascending" aria-label="No: activate to sort column descending">No</th><th style="width: 39px;" class="sorting" tabindex="0" aria-controls="DataTables_Table_0" rowspan="1" colspan="1" aria-label="Game Name: activate to sort column ascending">Game Name</th><th style="width: 45px;" class="sorting" tabindex="0" aria-controls="DataTables_Table_0" rowspan="1" colspan="1" aria-label="Game Genre: activate to sort column ascending">Game Genre</th><th style="width: 88px;" class="sorting" tabindex="0" aria-controls="DataTables_Table_0" rowspan="1" colspan="1" aria-label="Game Description: activate to sort column ascending">Game Description</th><th style="width: 100px;" class="sorting" tabindex="0" aria-controls="DataTables_Table_0" rowspan="1" colspan="1" aria-label="Game URL: activate to sort column ascending">Game URL</th><th style="width: 50px;" class="sorting" tabindex="0" aria-controls="DataTables_Table_0" rowspan="1" colspan="1" aria-label="Game Status: activate to sort column ascending">Game Status</th><th style="width: 50px;" class="sorting" tabindex="0" aria-controls="DataTables_Table_0" rowspan="1" colspan="1" aria-label="Action: activate to sort column ascending">Action</th></tr>
                         </thead>
                         <tbody>
-
-                                                                
-                                                                
-                                                                
-                                                                
-                                                                
-                                                                
-                                                                
-                                                                
-                                                                
-                                                                
-                                                                
-                                                                
-                                                                
-                                                                
-                                                                
-                                                                
-                                                                
-                                                                
-                                                                
-                                                                
-                                                                
-                                                                
-                                                                
-                                                                
-                                                                
-                                                                
-                                                                
-                                                                
-                                                                
-                                                                
-                                                                
-                                                                
-                                                                
-                                                                
-                                                                
-                                                                
-                                                                
-                                                                
-                                                                
-                                                                
-                                                                
-                                                                
-                                                                
-                                                                
-                                                                
-                                                                
-                                                                
-                                                                
-                                                                
-                                                                
-                                                                
-                                                                
-                                                                
-                                                                
-                                                                
-                                                                
-                                                                
-                                                                
-                                                                
-                                                                
-                                                                
-                                                                
-                                                                
-                                                                
-                                                                
-                                                                
-                                                                
-                                                                
-                                                                
-                                                                
-                                                                
-                                                                
-                                                                
-                                                                
-                                                                
-                                                                
-                                                                
-                                                                
-                                                                
-                                                                
-                                                                
-                                                                
-                                                                
-                                                                
-                                                                
-                                                                
-                                                                
-                                                                
-                                                                
-                                                                
-                                                                
-                                                                
-                                                                
-                                                                
-                                                                
-                                                                
-                                                                
-                                                                
-                                                                
-                                                                
-                                                                
-                                                                
-                                                                
-                                                                
-                                                                
-                                                                
-                                                                
-                                                                
-                                                                
-                                                                
-                                                                
-                                                                
-                                                                
-                                                                
-                                                                
-                                                                
-                                                                
-                                                                
-                                                                
-                                                                
-                                                                
-                                                                
-                                                                
-                                                                
-                                                                
-                                                                
-                                                                
-                                                                
-                                                                
-                                                                
-                                                                
-                                                                
-                                                                
-                                                                
-                                                                
-                                                                
-                                                                
-                                                                
-                                                                
-                                                                
-                                                                
-                                                                
-                                                                
-                                                                
-                                                                
-                                                                
-                                                                
-                                                                
-                                                                
-                                                                
-                                                                
-                                                                
-                                                                
-                                                                
-                                                                
-                                                                
-                                                                
-                                                                
-                                                                
-                                                                
-                                                                
-                                                                
-                                                                
-                                                                
-                                                                
-                                                                
-                                                                
-                                                                
-                                                                
-                                                                
-                                                                
-                                                                
-                                                                
-                                                                
-                                                                
-                                                                
-                                                                
-                                                                
-                                                                
-                                                                
-                                                                
-                                                                
-                                                                
-                                                                
-                                                                
-                                                                
-                                                                
-                                                                
-                                                                
-                                                                
-                                                                
-                                                                
-                                                                
-                                                                
-                                                                
-                                                                
-                                                                
-                                                                
-                                                                
-                                                                
-                                                                
-                                                                
-                                                                
-                                                                
-                                                                
-                                                                
-                                                                
-                                                                
-                                                                
-                                                                
-                                                                
-                                                                
-                                                                
-                                                                
-                                                                
-                                                                
-                                                                
-                                                                
-                                                                
-                                                                
-                                                                
-                                                                
-                                                                
-                                                                
-                                                                
-                                                                
-                                                                
-                                                                
-                                                                
-                                                                
-                                                                
-                                                                
-                                                                
-                                                                
-                                                                
-                                                                
-                                                                
-                                                                
-                                                                
-                                                                
-                                                                
-                                                                
-                                                                
-                                                                
-                                                                
-                                                                
-                                                                
-                                                                
-                                                                
-                                                                
+                                  
+                            <% var i = 1; games.forEach(function(data){ %>    
                             
                         <tr role="row" class="odd">
-                                <td class="sorting_1">1</td>
-                                <td>Alien Shooter</td>
-                                <td>Action</td>
+                                <td class="sorting_1"><%= i++ %></td>
+                                <td><%= data.game_name %></td>
+                                <td><%= data.genre_name %></td>
                                 <td>
-                                    <p>Alien Shooter
+                                    <p><%= data.game_description %>
                                     </p>
                                 </td>
-                                <td>https://girogamez.azureedge.net/games/AlienShooterv4</td>
+                                <td> <a href="<%= data.game_play_url %>" target="_blank"> <img src="<%= data.game_cover_url %>" style="height: 100%; width:100%" alt="" srcset=""></a></td>
 
-                                <td>Active</td>
+                                <td><%= data.game_status %></td>
 
                                 <td>
                                     <div class="flex align-items-center list-user-action">
 
-                                        <a class="iq-bg-success" data-toggle="tooltip" data-placement="top" title="" data-original-title="Edit" href="https://mitul.ktgamez.com/superadmin/game/43/edit"><i class="ri-pencil-line"></i></a>
-                                        <form action="https://mitul.ktgamez.com/superadmin/game/43" method="POST" class="form-delete" style="display: inline;" id="delete_game_43">
-                                            <input type="hidden" name="_token" value="cSP7Wf16AXALdbr7xSdv8frDV9RrVJqsnnLZ5Ez1">                                                    <input type="hidden" name="_method" value="DELETE">                                                    <a class="iq-bg-primary" data-toggle="tooltip" data-placement="top" title="" data-original-title="Delete" href="javascript:$('#delete_game_43').submit();"><i class="ri-delete-bin-line"></i></a>
-                                        </form>
+                                        <a class="iq-bg-success" data-toggle="tooltip" data-placement="top" title="" data-original-title="Edit" href="leaderboardgameupdate-<%= data.id %>"><i class="ri-pencil-line"></i></a>
+                                        <a class="iq-bg-danger" data-toggle="tooltip" data-placement="top" title="" data-original-title="Edit" href="leaderboardgamedelete/<%= data.id %>"><i class="ri-delete-bin-line"></i></a>
+                                        
                                     </div>
                                 </td>
-                            </tr><tr role="row" class="even">
-                                <td class="sorting_1">2</td>
-                                <td>Battle Tank</td>
-                                <td>Action</td>
-                                <td>
-                                    <p>Battle Tank
-                                    </p>
-                                </td>
-                                <td>https://girogamez.azureedge.net/games/BattleTankv5</td>
-
-                                <td>Active</td>
-
-                                <td>
-                                    <div class="flex align-items-center list-user-action">
-
-                                        <a class="iq-bg-success" data-toggle="tooltip" data-placement="top" title="" data-original-title="Edit" href="https://mitul.ktgamez.com/superadmin/game/44/edit"><i class="ri-pencil-line"></i></a>
-                                        <form action="https://mitul.ktgamez.com/superadmin/game/44" method="POST" class="form-delete" style="display: inline;" id="delete_game_44">
-                                            <input type="hidden" name="_token" value="cSP7Wf16AXALdbr7xSdv8frDV9RrVJqsnnLZ5Ez1">                                                    <input type="hidden" name="_method" value="DELETE">                                                    <a class="iq-bg-primary" data-toggle="tooltip" data-placement="top" title="" data-original-title="Delete" href="javascript:$('#delete_game_44').submit();"><i class="ri-delete-bin-line"></i></a>
-                                        </form>
-                                    </div>
-                                </td>
-                            </tr><tr role="row" class="odd">
-                                <td class="sorting_1">3</td>
-                                <td>Crush Me</td>
-                                <td>Action</td>
-                                <td>
-                                    <p>Crush Me
-                                    </p>
-                                </td>
-                                <td>https://girogamez.azureedge.net/games/CrushMev5</td>
-
-                                <td>Active</td>
-
-                                <td>
-                                    <div class="flex align-items-center list-user-action">
-
-                                        <a class="iq-bg-success" data-toggle="tooltip" data-placement="top" title="" data-original-title="Edit" href="https://mitul.ktgamez.com/superadmin/game/45/edit"><i class="ri-pencil-line"></i></a>
-                                        <form action="https://mitul.ktgamez.com/superadmin/game/45" method="POST" class="form-delete" style="display: inline;" id="delete_game_45">
-                                            <input type="hidden" name="_token" value="cSP7Wf16AXALdbr7xSdv8frDV9RrVJqsnnLZ5Ez1">                                                    <input type="hidden" name="_method" value="DELETE">                                                    <a class="iq-bg-primary" data-toggle="tooltip" data-placement="top" title="" data-original-title="Delete" href="javascript:$('#delete_game_45').submit();"><i class="ri-delete-bin-line"></i></a>
-                                        </form>
-                                    </div>
-                                </td>
-                            </tr><tr role="row" class="even">
-                                <td class="sorting_1">4</td>
-                                <td>Dollar Grabber</td>
-                                <td>Action</td>
-                                <td>
-                                    <p>Dollar Grabber
-                                    </p>
-                                </td>
-                                <td>https://girogamez.azureedge.net/games/DollarGrabberv2</td>
-
-                                <td>Active</td>
-
-                                <td>
-                                    <div class="flex align-items-center list-user-action">
-
-                                        <a class="iq-bg-success" data-toggle="tooltip" data-placement="top" title="" data-original-title="Edit" href="https://mitul.ktgamez.com/superadmin/game/46/edit"><i class="ri-pencil-line"></i></a>
-                                        <form action="https://mitul.ktgamez.com/superadmin/game/46" method="POST" class="form-delete" style="display: inline;" id="delete_game_46">
-                                            <input type="hidden" name="_token" value="cSP7Wf16AXALdbr7xSdv8frDV9RrVJqsnnLZ5Ez1">                                                    <input type="hidden" name="_method" value="DELETE">                                                    <a class="iq-bg-primary" data-toggle="tooltip" data-placement="top" title="" data-original-title="Delete" href="javascript:$('#delete_game_46').submit();"><i class="ri-delete-bin-line"></i></a>
-                                        </form>
-                                    </div>
-                                </td>
-                            </tr><tr role="row" class="odd">
-                                <td class="sorting_1">5</td>
-                                <td>Jungle War</td>
-                                <td>Action</td>
-                                <td>
-                                    <p>Jungle War
-                                    </p>
-                                </td>
-                                <td>https://girogamez.azureedge.net/games/JungleWarv2</td>
-
-                                <td>Active</td>
-
-                                <td>
-                                    <div class="flex align-items-center list-user-action">
-
-                                        <a class="iq-bg-success" data-toggle="tooltip" data-placement="top" title="" data-original-title="Edit" href="https://mitul.ktgamez.com/superadmin/game/47/edit"><i class="ri-pencil-line"></i></a>
-                                        <form action="https://mitul.ktgamez.com/superadmin/game/47" method="POST" class="form-delete" style="display: inline;" id="delete_game_47">
-                                            <input type="hidden" name="_token" value="cSP7Wf16AXALdbr7xSdv8frDV9RrVJqsnnLZ5Ez1">                                                    <input type="hidden" name="_method" value="DELETE">                                                    <a class="iq-bg-primary" data-toggle="tooltip" data-placement="top" title="" data-original-title="Delete" href="javascript:$('#delete_game_47').submit();"><i class="ri-delete-bin-line"></i></a>
-                                        </form>
-                                    </div>
-                                </td>
-                            </tr><tr role="row" class="even">
-                                <td class="sorting_1">6</td>
-                                <td>Robinhood</td>
-                                <td>Action</td>
-                                <td>
-                                    <p>Robinhood
-                                    </p>
-                                </td>
-                                <td>https://girogamez.azureedge.net/games/Robinhood</td>
-
-                                <td>Active</td>
-
-                                <td>
-                                    <div class="flex align-items-center list-user-action">
-
-                                        <a class="iq-bg-success" data-toggle="tooltip" data-placement="top" title="" data-original-title="Edit" href="https://mitul.ktgamez.com/superadmin/game/48/edit"><i class="ri-pencil-line"></i></a>
-                                        <form action="https://mitul.ktgamez.com/superadmin/game/48" method="POST" class="form-delete" style="display: inline;" id="delete_game_48">
-                                            <input type="hidden" name="_token" value="cSP7Wf16AXALdbr7xSdv8frDV9RrVJqsnnLZ5Ez1">                                                    <input type="hidden" name="_method" value="DELETE">                                                    <a class="iq-bg-primary" data-toggle="tooltip" data-placement="top" title="" data-original-title="Delete" href="javascript:$('#delete_game_48').submit();"><i class="ri-delete-bin-line"></i></a>
-                                        </form>
-                                    </div>
-                                </td>
-                            </tr><tr role="row" class="odd">
-                                <td class="sorting_1">7</td>
-                                <td>Solo Soldier</td>
-                                <td>Action</td>
-                                <td>
-                                    <p>Solo Soldier
-                                    </p>
-                                </td>
-                                <td>https://girogamez.azureedge.net/games/SoloSoldierv10</td>
-
-                                <td>Active</td>
-
-                                <td>
-                                    <div class="flex align-items-center list-user-action">
-
-                                        <a class="iq-bg-success" data-toggle="tooltip" data-placement="top" title="" data-original-title="Edit" href="https://mitul.ktgamez.com/superadmin/game/49/edit"><i class="ri-pencil-line"></i></a>
-                                        <form action="https://mitul.ktgamez.com/superadmin/game/49" method="POST" class="form-delete" style="display: inline;" id="delete_game_49">
-                                            <input type="hidden" name="_token" value="cSP7Wf16AXALdbr7xSdv8frDV9RrVJqsnnLZ5Ez1">                                                    <input type="hidden" name="_method" value="DELETE">                                                    <a class="iq-bg-primary" data-toggle="tooltip" data-placement="top" title="" data-original-title="Delete" href="javascript:$('#delete_game_49').submit();"><i class="ri-delete-bin-line"></i></a>
-                                        </form>
-                                    </div>
-                                </td>
-                            </tr><tr role="row" class="even">
-                                <td class="sorting_1">8</td>
-                                <td>Zombie Shooter</td>
-                                <td>Action</td>
-                                <td>
-                                    <p>Zombie Shooter
-                                    </p>
-                                </td>
-                                <td>https://girogamez.azureedge.net/games/ZombieShooterv2</td>
-
-                                <td>Active</td>
-
-                                <td>
-                                    <div class="flex align-items-center list-user-action">
-
-                                        <a class="iq-bg-success" data-toggle="tooltip" data-placement="top" title="" data-original-title="Edit" href="https://mitul.ktgamez.com/superadmin/game/50/edit"><i class="ri-pencil-line"></i></a>
-                                        <form action="https://mitul.ktgamez.com/superadmin/game/50" method="POST" class="form-delete" style="display: inline;" id="delete_game_50">
-                                            <input type="hidden" name="_token" value="cSP7Wf16AXALdbr7xSdv8frDV9RrVJqsnnLZ5Ez1">                                                    <input type="hidden" name="_method" value="DELETE">                                                    <a class="iq-bg-primary" data-toggle="tooltip" data-placement="top" title="" data-original-title="Delete" href="javascript:$('#delete_game_50').submit();"><i class="ri-delete-bin-line"></i></a>
-                                        </form>
-                                    </div>
-                                </td>
-                            </tr><tr role="row" class="odd">
-                                <td class="sorting_1">9</td>
-                                <td>Brick Breaker</td>
-                                <td>Arcade</td>
-                                <td>
-                                    <p>Brick Breaker
-                                    </p>
-                                </td>
-                                <td>https://girogamez.azureedge.net/games/BrickBreaker</td>
-
-                                <td>Active</td>
-
-                                <td>
-                                    <div class="flex align-items-center list-user-action">
-
-                                        <a class="iq-bg-success" data-toggle="tooltip" data-placement="top" title="" data-original-title="Edit" href="https://mitul.ktgamez.com/superadmin/game/51/edit"><i class="ri-pencil-line"></i></a>
-                                        <form action="https://mitul.ktgamez.com/superadmin/game/51" method="POST" class="form-delete" style="display: inline;" id="delete_game_51">
-                                            <input type="hidden" name="_token" value="cSP7Wf16AXALdbr7xSdv8frDV9RrVJqsnnLZ5Ez1">                                                    <input type="hidden" name="_method" value="DELETE">                                                    <a class="iq-bg-primary" data-toggle="tooltip" data-placement="top" title="" data-original-title="Delete" href="javascript:$('#delete_game_51').submit();"><i class="ri-delete-bin-line"></i></a>
-                                        </form>
-                                    </div>
-                                </td>
-                            </tr><tr role="row" class="even">
-                                <td class="sorting_1">10</td>
-                                <td>Choco Loot</td>
-                                <td>Arcade</td>
-                                <td>
-                                    <p>Choco Loot
-                                    </p>
-                                </td>
-                                <td>https://girogamez.azureedge.net/games/ChocoLootv4</td>
-
-                                <td>Active</td>
-
-                                <td>
-                                    <div class="flex align-items-center list-user-action">
-
-                                        <a class="iq-bg-success" data-toggle="tooltip" data-placement="top" title="" data-original-title="Edit" href="https://mitul.ktgamez.com/superadmin/game/52/edit"><i class="ri-pencil-line"></i></a>
-                                        <form action="https://mitul.ktgamez.com/superadmin/game/52" method="POST" class="form-delete" style="display: inline;" id="delete_game_52">
-                                            <input type="hidden" name="_token" value="cSP7Wf16AXALdbr7xSdv8frDV9RrVJqsnnLZ5Ez1">                                                    <input type="hidden" name="_method" value="DELETE">                                                    <a class="iq-bg-primary" data-toggle="tooltip" data-placement="top" title="" data-original-title="Delete" href="javascript:$('#delete_game_52').submit();"><i class="ri-delete-bin-line"></i></a>
-                                        </form>
-                                    </div>
-                                </td>
-                            </tr></tbody>
+                            </tr>
+                            <% }) %>
+                            </tbody>
                     </table>
                    </div>
                 </div>

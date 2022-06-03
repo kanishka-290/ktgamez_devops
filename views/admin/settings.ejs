@@ -4,6 +4,17 @@
     <div class="container-fluid">
         <div class="row">
             <div class="col-sm-12">
+                <% if(typeof alert != 'undefiend'){ %>
+                    <% alert.forEach(function(error){ %>
+                <div class="alert alert-warning alert-dismissible fade show" role="alert">
+                  
+                  <strong><%= error.msg %></strong>
+                    <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                      </button>
+                  </div>
+                  <% }) %>
+                  <% } %>
                 <div class="iq-card">
                     <div class="iq-card-header d-flex justify-content-between">
                         <div class="iq-header-title">
@@ -15,7 +26,7 @@
                         <div class="row">
                             <div class="col-lg-12">
                                                                 
-                                <form method="POST" action="https://mitul.ktgamez.com/superadmin/settings/signupbonus?Signup%20Bonus">
+                                <form method="POST" action="signupbonus">
                                     <input type="hidden" name="_token" value="WHd7gLJXmzPTqzGnKOq1xT4buVJgnpF6cYeTcZKo">                                    
 
                                     <div class="row">
@@ -23,7 +34,9 @@
                                             <div class="row">
                                                 <div class="col-12 form-group">
                                                 <label>Signup Bonus Tokens</label>
-                                                    <input type="text" class="form-control" placeholder="Signup Bonus Tokens" name="SignupBonus" value="10000">
+                                                <input type="hidden" class="form-control" placeholder="Signup Bonus Tokens" name="key" value="<%= data[0].key %>">
+
+                                                    <input type="text" class="form-control" placeholder="Signup Bonus Tokens" name="SignupBonus" value="<%= data[0].value %>">
                                                 </div>
 
                                                
@@ -43,7 +56,7 @@
                                     </div>
                                 </form>
 
-                                <form method="POST" action="https://mitul.ktgamez.com/superadmin/settings/referralbonus?Referral%20Bonus">
+                                <form method="POST" action="referralbonus">
                                     <input type="hidden" name="_token" value="WHd7gLJXmzPTqzGnKOq1xT4buVJgnpF6cYeTcZKo">                                    
 
                                     <div class="row">
@@ -51,7 +64,7 @@
                                             <div class="row">
                                                 <div class="col-12 form-group">
                                                     <label>Referral Bonus Tokens</label>
-                                                    <input type="text" class="form-control" placeholder="Referral Bonus Tokens" name="ReferralBonus" value="500">
+                                                    <input type="text" class="form-control" placeholder="Referral Bonus Tokens" name="ReferralBonus" value="<%= data[1].value %>">
                                                 </div>
 
                                                
@@ -72,8 +85,7 @@
                                 </form>
 
 
-                                <form method="POST" action="https://mitul.ktgamez.com/superadmin/settings/leaderboard?Referral%20Bonus">
-                                    <input type="hidden" name="_token" value="WHd7gLJXmzPTqzGnKOq1xT4buVJgnpF6cYeTcZKo">                                    
+                                <form method="POST" action="leaderboardduration">
 
                                     <div class="row">
                                         <div class="col-lg-7">
@@ -81,10 +93,11 @@
                                                 <div class="col-12 form-group">
                                                     <label>LeaderBoard Duration</label>
                                                     <br>
-                                                    <label>From Date - 2021-01-01 10:55:00</label>
-                                                    <input type="datetime-local" class="form-control" placeholder="FromDate" name="FromDate">
-                                                    <label>To Date - 2022-05-30 10:55:00</label>
-                                                    <input type="datetime-local" class="form-control" placeholder="ToDate" name="ToDate">
+                                                    <% var date = JSON.parse(data[2].value) %>
+                                                    <label>From Date - <%= date.FromDate %></label>
+                                                    <input type="datetime-local" class="form-control" placeholder="FromDate" name="FromDate" value="<%= Date.parse(date.FromDate) %>">
+                                                    <label>To Date - <%= date.ToDate %></label>
+                                                    <input type="datetime-local" class="form-control" placeholder="ToDate" name="ToDate" value="<%= date.ToDate %>">
                                                 </div>
 
                                                
