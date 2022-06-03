@@ -5,10 +5,7 @@ const store = require("store2")
 
 // Dashboard ########################
 const dashboard = (req,res) =>{
-    var user = store.get("user")
-    if(user == null || user == "" || user == undefined){
-        return res.redirect('../superadmin/login');
-    }
+   
     res.render("admin/index.ejs",{ title : "GiroGamez Superadmin Panel - KT Gamez powered by GiroGames" });
 }
 

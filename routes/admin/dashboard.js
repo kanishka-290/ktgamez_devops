@@ -2,10 +2,11 @@ const admin = require("../../controllers/admin/dashboard");
 const {check,validationResult} = require("express-validator");
 const emailValidator = require("email-validator");
 const { min } = require("moment");
+const {checksession} = require("../../utils/verifyToken")
 
 module.exports =function(app) {
     
-   app.get("/superadmin/", admin.dashboard)
+   app.get("/superadmin/",checksession, admin.dashboard)
 
    app.get("/superadmin/login", admin.login);
    app.post("/superadmin/login", [
@@ -25,7 +26,7 @@ module.exports =function(app) {
 
    
 
-   app.get("/superadmin/genrecreate", admin.grnrecreate)
+   app.get("/superadmin/genrecreate",checksession, admin.grnrecreate)
    app.post("/superadmin/genrecreate",[
       check("genre_name","Genre name is required")
          .exists()
@@ -35,9 +36,9 @@ module.exports =function(app) {
          .isLength({max:300,min:2}),
       check("genre_status","Genre status is required")
          .exists()
-   ], admin.grnrecreate_post)
-   app.get("/superadmin/genredelete/:id", admin.genredelete)
-   app.get("/superadmin/genreupdate-:id", admin.genreeditlink)
+   ],checksession, admin.grnrecreate_post)
+   app.get("/superadmin/genredelete/:id",checksession, admin.genredelete)
+   app.get("/superadmin/genreupdate-:id",checksession, admin.genreeditlink)
    app.post("/superadmin/genreupdate-:id",[
       check("genre_name","Genre name is required")
          .exists()
@@ -48,10 +49,10 @@ module.exports =function(app) {
       check("genre_status","Genre status is required")
          .exists()
    ], admin.genreupdate)
-   app.get("/superadmin/genreview", admin.genrelist)
+   app.get("/superadmin/genreview",checksession, admin.genrelist)
 
 
-   app.get("/superadmin/gamecreate", admin.addgame)
+   app.get("/superadmin/gamecreate", checksession, admin.addgame)
    app.post("/superadmin/gamecreate",[
       check("game_name","Game name is required")
          .exists()
@@ -69,8 +70,8 @@ module.exports =function(app) {
       check("game_status","Genre status is required")
          .exists()
    ], admin.addgame_post)
-   app.get("/superadmin/gamedelete/:id", admin.gamedelete)
-   app.get("/superadmin/gameupdate-:id", admin.gameeditlink)
+   app.get("/superadmin/gamedelete/:id",checksession, admin.gamedelete)
+   app.get("/superadmin/gameupdate-:id",checksession, admin.gameeditlink)
    app.post("/superadmin/gameupdate-:id",[
       check("game_name","Game name is required")
          .exists()
@@ -87,10 +88,10 @@ module.exports =function(app) {
          .exists(),
       check("game_status","Genre status is required")
          .exists()
-   ], admin.gameupdate)
-   app.get("/superadmin/game", admin.gameview)
+   ],checksession, admin.gameupdate)
+   app.get("/superadmin/game",checksession, admin.gameview)
 
-   app.get("/superadmin/competecreate", admin.leaderboardgamecreate)
+   app.get("/superadmin/competecreate",checksession, admin.leaderboardgamecreate)
    app.post("/superadmin/competecreate",[
       check("game_name","Game name is required")
          .exists()
@@ -110,8 +111,8 @@ module.exports =function(app) {
          .exists(),
       check("game_status","Genre status is required")
          .exists()
-   ], admin.leaderboardgamecreate_post)
-   app.get("/superadmin/leaderboardgameupdate-:id", admin.leaderboardgameeditlink)
+   ], checksession, admin.leaderboardgamecreate_post)
+   app.get("/superadmin/leaderboardgameupdate-:id",checksession, admin.leaderboardgameeditlink)
    app.post("/superadmin/leaderboardgameupdate-:id",[
       check("game_name","Game name is required")
          .exists()
@@ -131,14 +132,14 @@ module.exports =function(app) {
          .exists(),
       check("game_status","Genre status is required")
          .exists()
-   ], admin.leaderboardgameupdate)
-   app.get("/superadmin/leaderboardgamedelete/:id", admin.leaderboardgamedelete)
+   ],checksession, admin.leaderboardgameupdate)
+   app.get("/superadmin/leaderboardgamedelete/:id",checksession, admin.leaderboardgamedelete)
 
 
 
-   app.get("/superadmin/compete", admin.leaderboardgameview)
-   app.get("/superadmin/user", admin.users)
-   app.get("/superadmin/settings", admin.settings)
+   app.get("/superadmin/compete",checksession, admin.leaderboardgameview)
+   app.get("/superadmin/user",checksession, admin.users)
+   app.get("/superadmin/settings",checksession, admin.settings)
    app.post("/superadmin/signupbonus",[
       check("key","Key is required")
          .exists()
@@ -146,12 +147,12 @@ module.exports =function(app) {
       check("SignupBonus","Signup bonus required")
          .exists()
          .isNumeric(),
-   ], admin.signupbonus)
+   ],checksession, admin.signupbonus)
    app.post("/superadmin/referralbonus",[
       check("ReferralBonus","Referral Bonus bonus required")
          .exists()
          .isNumeric(),
-   ], admin.referralbonus)
+   ],checksession, admin.referralbonus)
    app.post("/superadmin/leaderboardduration",[
       check("FromDate","FromDate is required")
          .exists()
@@ -160,9 +161,9 @@ module.exports =function(app) {
       check("ToDate","ToDate is required")
          .exists()
          .isLength({min:3}),
-   ], admin.leaderboard_duration)
+   ],checksession, admin.leaderboard_duration)
 
-   app.get("/superadmin/leaderboard", admin.referandwin)
+   app.get("/superadmin/leaderboard",checksession, admin.referandwin)
 
 
 

@@ -1,3 +1,4 @@
+const store = require("store2")
 function verifyToken(req,res,next){
     
     var token = req.headers.authorization;
@@ -27,7 +28,17 @@ function verifyToken2(req,res,next){
         next();
     }
 }
+
+const checksession = (req,res,next) =>{
+    var user = store.get("user")
+    if(user == null || user == "" || user == undefined){
+        return res.redirect('../superadmin/login');
+    }else{
+        next();
+    }
+}
 module.exports = {
     verifyToken,
-    verifyToken2
+    verifyToken2,
+    checksession,
 }
