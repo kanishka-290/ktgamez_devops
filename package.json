@@ -36,7 +36,7 @@
     "passport-oauth2": "^1.6.1",
     "password-validator": "^5.2.1",
     "rand-token": "^1.0.1",
-    "socket.io": "^2.4.1",
+    "socket.io": "^2.5.0",
     "store2": "^2.13.2"
   },
   "devDependencies": {
